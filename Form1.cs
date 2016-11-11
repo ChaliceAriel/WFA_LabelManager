@@ -18,7 +18,7 @@ namespace WindowsFormsApplication_LabelManager
         {
 
             InitializeComponent();
-           
+
         }
 
         private void SetupLabelObject()
@@ -27,24 +27,49 @@ namespace WindowsFormsApplication_LabelManager
             //ObjectDataEdit.Clear();
 
             // clear all items first
-            ObjectNameSelector.Items.Clear();
+            //ObjectNameSelector.Items.Clear();
+            ShippingLabelObject.Clear();
 
             if (_label == null)
                 return;
 
-            foreach (string objName in _label.ObjectNames)
-                if (!string.IsNullOrEmpty(objName))
-                    ObjectNameSelector.Items.Add(objName);
+            List<string> labelField = new List<string>();
 
-            if (ObjectNameSelector.Items.Count > 0)
-                ObjectNameSelector.SelectedIndex = 0;
+            foreach (string objName in _label.ObjectNames)
+            {
+                if (!string.IsNullOrEmpty(objName))
+                {
+                    //ObjectNameSelector.Items.Add(objName);
+                    labelField.Add(objName);
+                }
+                //if (ObjectNameSelector.Items.Count > 0)
+                //ObjectNameSelector.SelectedIndex = 0;
+            }
+
+            ShippingLabelObject.Text = labelField[0];
+            try
+            {
+                if (!string.IsNullOrEmpty(labelField[1]))
+                {
+                    ToFromLabelObject.Text = labelField[1];
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                ToFromLabelObject.Text = " ";
+                MessageBox.Show("The label template selected has only one field.");
+            }
+
+           
+
+
         }
 
         private void UpdateControls()
         {
-            ObjectNameSelector.Enabled = ObjectNameSelector.Items.Count > 0;
-            //ObjectDataEdit.Enabled = ObjectNameCmb.Items.Count > 0 && !string.IsNullOrEmpty(ObjectNameCmb.Text);
-            //PrintLabelBtn.Enabled = _label != null && !string.IsNullOrEmpty(PrintLabelBtn.Text);
+            //ObjectNameSelector.Enabled = ObjectNameSelector.Items.Count > 0;
+            //FileNameEdit.Enabled = ObjectNameSelector.Items.Count > 0 && !string.IsNullOrEmpty(ObjectNameSelector.Text);
+            PrintLabelBtn.Enabled = _label != null && !string.IsNullOrEmpty(PrintLabelBtn.Text);
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -59,12 +84,7 @@ namespace WindowsFormsApplication_LabelManager
 
         private void BrowseBtn_Click(object sender, EventArgs e)
         {
-            // use the current file name's folder as the initial
-            // directory for the open file dialog
-            //string str = FileNameEdit.Text;
-            //int i = str.LastIndexOf("\\");
-            //str = str.Substring(0, i);
-            //openFileDialog1.InitialDirectory = str;
+
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -72,6 +92,7 @@ namespace WindowsFormsApplication_LabelManager
 
                 // show the file name
                 FileNameEdit.Text = openFileDialog1.FileName;
+                
 
                 // populate label objects
                 SetupLabelObject();
@@ -85,13 +106,24 @@ namespace WindowsFormsApplication_LabelManager
 
         private void ShippingLabelField_TextChanged(object sender, EventArgs e)
         {
-            _label.SetObjectText(ObjectNameSelector.Text, ShippingLabelField.Text);
+            try
+            {
+                //_label.SetObjectText(ObjectNameSelector.Text, ShippingLabelField.Text);
+                _label.SetObjectText(ShippingLabelObject.Text, ShippingLabelField.Text);
+
+            }
+            catch (NullReferenceException)
+            {
+
+                MessageBox.Show("Please select a label template file before editing or creating a new label.");
+            }
+
         }
 
-        private void SetShippingLabelText ()
-        { 
+        private void SetShippingLabelText()
+        {
 
-            Address address1 = new Address()
+            var address1 = new Address()
             {
                 FirstName = "Chalice",
                 LastName = "Stevens",
@@ -123,6 +155,7 @@ namespace WindowsFormsApplication_LabelManager
 
         private void PrintLabelBtn_Click(object sender, EventArgs e)
         {
+
             IPrinter printer = Framework.GetPrinters()["DYMO LabelWriter 450 Turbo"];
             if (printer is ILabelWriterPrinter)
             {
@@ -134,11 +167,14 @@ namespace WindowsFormsApplication_LabelManager
                     printParams.RollSelection = (RollSelection)Enum.Parse(typeof(RollSelection), "Auto");
                 }
 
+                
                 _label.Print(printer, printParams);
             }
             else
                 _label.Print(printer); // print with default params
         }
+
+
 
         private void PrintLabelBtn_KeyDown(object sender, KeyEventArgs e)
         {
@@ -155,16 +191,62 @@ namespace WindowsFormsApplication_LabelManager
 
             SetShippingLabelText();
         }
-    }
-    public class Address
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Company { get; set; }
-        public string StreetApt { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public int Zip { get; set; }
+
+        private void ObjectNameSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ToFromLabelField_TextChanged(object sender, EventArgs e)
+        {
+
+            try
+            {
+                //_label.SetObjectText(ObjectNameSelector.Text, ShippingLabelField.Text);
+                _label.SetObjectText(ToFromLabelObject.Text, ToFromLabelField.Text);
+
+            }
+            catch (NullReferenceException)
+            {
+
+                MessageBox.Show("Please select a label template file before editing or creating a new label.");
+                FileNameEdit.BackColor = System.Drawing.Color.Tomato;
+                BrowseBtn.FlatAppearance.BorderColor = System.Drawing.Color.Tomato;
+            }
+
+        }
+
+        public class Address
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Company { get; set; }
+            public string StreetApt { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public int Zip { get; set; }
+
+        }
+
+        class LabelFont : IFontInfo
+        {
+            public string FontName { get; set; }
+
+            public double FontSize { get; set; }
+
+            public DYMO.Label.Framework.FontStyle FontStyle { get; set; }
+
+            //FontStyle Enum:
+            
+            //None	    0	Normal style text.
+            //Bold	    1	Bold text.
+            //Italic    2	Italic text.
+            //Underline 4	Underline text.
+            //Strikeout 8	Strikeout text.
+
+
+        }
 
     }
+
 }

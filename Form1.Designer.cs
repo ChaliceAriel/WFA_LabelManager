@@ -34,13 +34,6 @@ namespace WindowsFormsApplication_LabelManager
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.PrintLabelBtn = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.FileNameEdit = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.BrowseBtn = new System.Windows.Forms.Button();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.ObjectNameSelector = new System.Windows.Forms.ComboBox();
-            this.ShippingLabelField = new System.Windows.Forms.TextBox();
             this.orderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.trackingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.customerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,15 +41,25 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cardImg = new System.Windows.Forms.DataGridViewImageColumn();
             this.printTwoLabels = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.FileNameEdit = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.BrowseBtn = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.ObjectNameSelector = new System.Windows.Forms.ComboBox();
+            this.ShippingLabelField = new System.Windows.Forms.TextBox();
+            this.ToFromLabelField = new System.Windows.Forms.TextBox();
+            this.ShippingLabelObject = new System.Windows.Forms.TextBox();
+            this.ToFromLabelObject = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // PrintLabelBtn
             // 
             this.PrintLabelBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.PrintLabelBtn.Location = new System.Drawing.Point(415, 101);
+            this.PrintLabelBtn.Location = new System.Drawing.Point(325, 163);
             this.PrintLabelBtn.Name = "PrintLabelBtn";
-            this.PrintLabelBtn.Size = new System.Drawing.Size(124, 51);
+            this.PrintLabelBtn.Size = new System.Drawing.Size(131, 51);
             this.PrintLabelBtn.TabIndex = 4;
             this.PrintLabelBtn.Text = "PRINT LABEL";
             this.PrintLabelBtn.UseVisualStyleBackColor = false;
@@ -76,74 +79,11 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount,
             this.cardImg,
             this.printTwoLabels});
-            this.dataGridView1.Location = new System.Drawing.Point(13, 215);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 276);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(1288, 496);
             this.dataGridView1.TabIndex = 4;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(13, 29);
-            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(393, 26);
-            this.dateTimePicker1.TabIndex = 2;
-            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
-            // 
-            // FileNameEdit
-            // 
-            this.FileNameEdit.Location = new System.Drawing.Point(629, 30);
-            this.FileNameEdit.Name = "FileNameEdit";
-            this.FileNameEdit.Size = new System.Drawing.Size(527, 26);
-            this.FileNameEdit.TabIndex = 5;
-            this.FileNameEdit.TextChanged += new System.EventHandler(this.FileNameEdit_TextChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(625, 6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(423, 20);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Select a label file here: (click Browse... to browse to the file)";
-            // 
-            // BrowseBtn
-            // 
-            this.BrowseBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BrowseBtn.Location = new System.Drawing.Point(544, 30);
-            this.BrowseBtn.Name = "BrowseBtn";
-            this.BrowseBtn.Size = new System.Drawing.Size(79, 26);
-            this.BrowseBtn.TabIndex = 7;
-            this.BrowseBtn.Text = "Browse...";
-            this.BrowseBtn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.BrowseBtn.UseVisualStyleBackColor = true;
-            this.BrowseBtn.Click += new System.EventHandler(this.BrowseBtn_Click);
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.DefaultExt = "lwl";
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "DYMO Label File (*.label)|*.label";
-            // 
-            // ObjectNameSelector
-            // 
-            this.ObjectNameSelector.FormattingEnabled = true;
-            this.ObjectNameSelector.Location = new System.Drawing.Point(1162, 27);
-            this.ObjectNameSelector.Name = "ObjectNameSelector";
-            this.ObjectNameSelector.Size = new System.Drawing.Size(150, 28);
-            this.ObjectNameSelector.TabIndex = 8;
-            // 
-            // ShippingLabelField
-            // 
-            this.ShippingLabelField.Location = new System.Drawing.Point(13, 82);
-            this.ShippingLabelField.Multiline = true;
-            this.ShippingLabelField.Name = "ShippingLabelField";
-            this.ShippingLabelField.Size = new System.Drawing.Size(306, 84);
-            this.ShippingLabelField.TabIndex = 3;
-            this.ShippingLabelField.TextChanged += new System.EventHandler(this.ShippingLabelField_TextChanged);
-            this.ShippingLabelField.Leave += new System.EventHandler(this.ShippingLabelField_Leave);
             // 
             // orderNum
             // 
@@ -192,12 +132,112 @@ namespace WindowsFormsApplication_LabelManager
             this.printTwoLabels.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.printTwoLabels.Width = 60;
             // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.dateTimePicker1.Location = new System.Drawing.Point(13, 15);
+            this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(393, 26);
+            this.dateTimePicker1.TabIndex = 2;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            // 
+            // FileNameEdit
+            // 
+            this.FileNameEdit.BackColor = System.Drawing.SystemColors.Window;
+            this.FileNameEdit.Location = new System.Drawing.Point(774, 31);
+            this.FileNameEdit.Name = "FileNameEdit";
+            this.FileNameEdit.Size = new System.Drawing.Size(527, 26);
+            this.FileNameEdit.TabIndex = 5;
+            this.FileNameEdit.TextChanged += new System.EventHandler(this.FileNameEdit_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(770, 7);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(423, 20);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Select a label file here: (click Browse... to browse to the file)";
+            // 
+            // BrowseBtn
+            // 
+            this.BrowseBtn.BackColor = System.Drawing.Color.RoyalBlue;
+            this.BrowseBtn.FlatAppearance.BorderColor = System.Drawing.Color.MidnightBlue;
+            this.BrowseBtn.FlatAppearance.BorderSize = 2;
+            this.BrowseBtn.FlatAppearance.MouseDownBackColor = System.Drawing.Color.MidnightBlue;
+            this.BrowseBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.MidnightBlue;
+            this.BrowseBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BrowseBtn.Font = new System.Drawing.Font("Book Antiqua", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BrowseBtn.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.BrowseBtn.Location = new System.Drawing.Point(670, 17);
+            this.BrowseBtn.Name = "BrowseBtn";
+            this.BrowseBtn.Size = new System.Drawing.Size(98, 40);
+            this.BrowseBtn.TabIndex = 7;
+            this.BrowseBtn.Text = "Browse...";
+            this.BrowseBtn.UseVisualStyleBackColor = false;
+            this.BrowseBtn.Click += new System.EventHandler(this.BrowseBtn_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "lwl";
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "DYMO Label File (*.label)|*.label";
+            // 
+            // ObjectNameSelector
+            // 
+            this.ObjectNameSelector.FormattingEnabled = true;
+            this.ObjectNameSelector.Location = new System.Drawing.Point(13, 89);
+            this.ObjectNameSelector.Name = "ObjectNameSelector";
+            this.ObjectNameSelector.Size = new System.Drawing.Size(150, 28);
+            this.ObjectNameSelector.TabIndex = 8;
+            this.ObjectNameSelector.SelectedIndexChanged += new System.EventHandler(this.ObjectNameSelector_SelectedIndexChanged);
+            // 
+            // ShippingLabelField
+            // 
+            this.ShippingLabelField.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShippingLabelField.Location = new System.Drawing.Point(13, 130);
+            this.ShippingLabelField.Multiline = true;
+            this.ShippingLabelField.Name = "ShippingLabelField";
+            this.ShippingLabelField.Size = new System.Drawing.Size(306, 84);
+            this.ShippingLabelField.TabIndex = 3;
+            this.ShippingLabelField.TextChanged += new System.EventHandler(this.ShippingLabelField_TextChanged);
+            this.ShippingLabelField.Leave += new System.EventHandler(this.ShippingLabelField_Leave);
+            // 
+            // ToFromLabelField
+            // 
+            this.ToFromLabelField.Location = new System.Drawing.Point(591, 130);
+            this.ToFromLabelField.Multiline = true;
+            this.ToFromLabelField.Name = "ToFromLabelField";
+            this.ToFromLabelField.Size = new System.Drawing.Size(306, 84);
+            this.ToFromLabelField.TabIndex = 9;
+            this.ToFromLabelField.TextChanged += new System.EventHandler(this.ToFromLabelField_TextChanged);
+            // 
+            // ShippingLabelObject
+            // 
+            this.ShippingLabelObject.Location = new System.Drawing.Point(243, 89);
+            this.ShippingLabelObject.Name = "ShippingLabelObject";
+            this.ShippingLabelObject.ReadOnly = true;
+            this.ShippingLabelObject.Size = new System.Drawing.Size(163, 26);
+            this.ShippingLabelObject.TabIndex = 13;
+            // 
+            // ToFromLabelObject
+            // 
+            this.ToFromLabelObject.Location = new System.Drawing.Point(591, 89);
+            this.ToFromLabelObject.Name = "ToFromLabelObject";
+            this.ToFromLabelObject.ReadOnly = true;
+            this.ToFromLabelObject.Size = new System.Drawing.Size(163, 26);
+            this.ToFromLabelObject.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(1314, 938);
+            this.Controls.Add(this.ToFromLabelObject);
+            this.Controls.Add(this.ShippingLabelObject);
+            this.Controls.Add(this.ToFromLabelField);
             this.Controls.Add(this.ShippingLabelField);
             this.Controls.Add(this.ObjectNameSelector);
             this.Controls.Add(this.BrowseBtn);
@@ -236,6 +276,9 @@ namespace WindowsFormsApplication_LabelManager
         private System.Windows.Forms.DataGridViewTextBoxColumn toFromAmount;
         private System.Windows.Forms.DataGridViewImageColumn cardImg;
         private System.Windows.Forms.DataGridViewCheckBoxColumn printTwoLabels;
+        private System.Windows.Forms.TextBox ToFromLabelField;
+        private System.Windows.Forms.TextBox ShippingLabelObject;
+        private System.Windows.Forms.TextBox ToFromLabelObject;
     }
 }
 
