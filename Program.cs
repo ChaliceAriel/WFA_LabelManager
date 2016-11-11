@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DYMO.Label.Framework;
 
 namespace WindowsFormsApplication_LabelManager
 {
@@ -18,5 +19,7 @@ namespace WindowsFormsApplication_LabelManager
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
+
+
     }
 }
