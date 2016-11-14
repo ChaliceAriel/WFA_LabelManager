@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DYMO.Label.Framework;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace WindowsFormsApplication_LabelManager
 {
@@ -19,7 +22,109 @@ namespace WindowsFormsApplication_LabelManager
 
             InitializeComponent();
 
+
         }
+
+        private void GetOrdersButton_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("16051178");
+            //GetOrders("12120608");
+            GetOneOrder("12232116");
+
+        }
+
+        public string GetStringFromReader(SqlDataReader instance, string col)
+        {
+            if (instance[col] == DBNull.Value)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return (string)instance[col];
+            }
+        }
+
+        //public List<GiftCardOrder> GetOrders(string orderNum)
+        //{
+        //    string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
+
+        //    List<GiftCardOrder>
+        //      orders = new List<GiftCardOrder>();
+
+        //    using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+        //    {
+        //        SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForOrder", sqlConnection);
+        //        SqlParameter param = new SqlParameter();
+        //        param.ParameterName = "@ShopatronOrderId";
+        //        param.Value = orderNum;
+
+        //        command.CommandType = CommandType.StoredProcedure;
+        //        //command.Parameters.Add(orderNum, SqlDbType.VarChar);
+        //        //command.Parameters["@ID"].Value = orderNum;
+        //        command.Connection = sqlConnection;
+
+        //        sqlConnection.Open();
+
+        //        using (SqlDataReader reader = command.ExecuteReader())
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                GiftCardOrder order = new GiftCardOrder();
+
+        //                order.PONum = GetStringFromReader(reader, "TrackingNumber");
+        //                order.KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId");
+        //                order.PurchasingCustomer = GetStringFromReader(reader, "BillTo_FirstName" + " " + "BillTo_LastName");
+
+        //                orders.Add(order);
+        //            }
+
+        //            return orders;
+
+        //        }
+
+        //    }
+
+        //}
+
+        public void GetOneOrder(string orderNum)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForOrder", sqlConnection);
+                SqlParameter param = new SqlParameter();
+                //param.ParameterName = "@ShopatronOrderId";
+                //param.Value = orderNum;
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add(orderNum, SqlDbType.VarChar);
+                command.Parameters["@ShopatronOrderId"].Value = orderNum;
+                command.Connection = sqlConnection;
+
+                sqlConnection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        GiftCardOrder order = new GiftCardOrder();
+
+                        order.PONum = GetStringFromReader(reader, "TrackingNumber");
+                        order.KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId");
+                        order.PurchasingCustomer = GetStringFromReader(reader, "BillTo_FirstName" + " " + "BillTo_LastName");
+                        textBox1.Text = order.PurchasingCustomer;
+                    }
+
+                    
+
+                }
+
+            }
+
+        }
+
 
         private void SetupLabelObject()
         {
@@ -148,6 +253,7 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
+
         private void ShippingLabelField_Leave(object sender, EventArgs e)
         {
 
@@ -227,6 +333,35 @@ namespace WindowsFormsApplication_LabelManager
             public int Zip { get; set; }
 
         }
+
+        public class GiftCardOrder
+        {
+            public string PONum { get; set; }
+            public string KiboOrderId { get; set; }
+            public string PurchasingCustomer { get; set; }
+            public string GCAmount { get; set; }
+            public bool IsGiftCard { get; set; }
+            public bool GiftCardIsElectronicGiftCard { get; set; }
+
+            public string CardImgURL { get; set; }
+            public string ToMsg { get; set; }
+            public string FromMsg { get; set; }
+
+            public Address ShipToAddress { get; set; }
+
+            public List<int> buildLineItemsList()
+            {
+                List<int> lineItemsList = new List<int>();
+
+
+                //add all line items associated with that Kibo order id to the list
+                //for each line item in the list add table row
+
+                return lineItemsList;
+            }
+        }
+
+
 
         class LabelFont : IFontInfo
         {

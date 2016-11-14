@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DYMO.Label.Framework;
 
+
 namespace WindowsFormsApplication_LabelManager
 {
     static class Program
@@ -18,6 +19,7 @@ namespace WindowsFormsApplication_LabelManager
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+
         }
 
 

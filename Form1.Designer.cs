@@ -51,6 +51,8 @@ namespace WindowsFormsApplication_LabelManager
             this.ToFromLabelField = new System.Windows.Forms.TextBox();
             this.ShippingLabelObject = new System.Windows.Forms.TextBox();
             this.ToFromLabelObject = new System.Windows.Forms.TextBox();
+            this.GetOrdersButton = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -79,10 +81,10 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount,
             this.cardImg,
             this.printTwoLabels});
-            this.dataGridView1.Location = new System.Drawing.Point(13, 276);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 550);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1288, 496);
+            this.dataGridView1.Size = new System.Drawing.Size(1288, 375);
             this.dataGridView1.TabIndex = 4;
             // 
             // orderNum
@@ -229,12 +231,33 @@ namespace WindowsFormsApplication_LabelManager
             this.ToFromLabelObject.Size = new System.Drawing.Size(163, 26);
             this.ToFromLabelObject.TabIndex = 14;
             // 
+            // GetOrdersButton
+            // 
+            this.GetOrdersButton.Location = new System.Drawing.Point(507, 17);
+            this.GetOrdersButton.Name = "GetOrdersButton";
+            this.GetOrdersButton.Size = new System.Drawing.Size(136, 40);
+            this.GetOrdersButton.TabIndex = 15;
+            this.GetOrdersButton.Text = "Get Orders";
+            this.GetOrdersButton.UseVisualStyleBackColor = true;
+            this.GetOrdersButton.Click += new System.EventHandler(this.GetOrdersButton_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(325, 291);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(707, 199);
+            this.textBox1.TabIndex = 16;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(1314, 938);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.GetOrdersButton);
             this.Controls.Add(this.ToFromLabelObject);
             this.Controls.Add(this.ShippingLabelObject);
             this.Controls.Add(this.ToFromLabelField);
@@ -279,6 +302,8 @@ namespace WindowsFormsApplication_LabelManager
         private System.Windows.Forms.TextBox ToFromLabelField;
         private System.Windows.Forms.TextBox ShippingLabelObject;
         private System.Windows.Forms.TextBox ToFromLabelObject;
+        private System.Windows.Forms.Button GetOrdersButton;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
