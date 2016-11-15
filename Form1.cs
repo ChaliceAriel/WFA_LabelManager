@@ -29,7 +29,7 @@ namespace WindowsFormsApplication_LabelManager
         {
             //MessageBox.Show("16051178");
             //GetOrders("12120608");
-            GetOneOrder("12232116");
+            GetOneOrder("PO5278A151");
 
         }
 
@@ -86,6 +86,13 @@ namespace WindowsFormsApplication_LabelManager
         //    }
 
         //}
+        public void AddSqlParameter(SqlCommand command, string orderNum)
+        {
+            SqlParameter param = new SqlParameter(
+                "@OrderNumber", SqlDbType.VarChar);
+            param.Value = orderNum;
+            command.Parameters.Add(param);
+        }
 
         public void GetOneOrder(string orderNum)
         {
@@ -94,30 +101,52 @@ namespace WindowsFormsApplication_LabelManager
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForOrder", sqlConnection);
-                SqlParameter param = new SqlParameter();
-                //param.ParameterName = "@ShopatronOrderId";
-                //param.Value = orderNum;
 
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add(orderNum, SqlDbType.VarChar);
-                command.Parameters["@ShopatronOrderId"].Value = orderNum;
+                AddSqlParameter(command, orderNum);
                 command.Connection = sqlConnection;
 
                 sqlConnection.Open();
 
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        GiftCardOrder order = new GiftCardOrder();
+                SqlDataReader reader = command.ExecuteReader();
 
-                        order.PONum = GetStringFromReader(reader, "TrackingNumber");
-                        order.KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId");
-                        order.PurchasingCustomer = GetStringFromReader(reader, "BillTo_FirstName" + " " + "BillTo_LastName");
-                        textBox1.Text = order.PurchasingCustomer;
-                    }
+                while (reader.Read())
+                {
+                    GiftCardOrder order = new GiftCardOrder {
+                    
+                    PONum = GetStringFromReader(reader, "TrackingNumber"),
+                    KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
+                    DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
+                    CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
+                    CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
+
+                    };
 
                     
+                    order.GiftCardData = new GiftCard {
+
+                    CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
+                    ToMsg = "Michael",//GetStringFromReader(reader, "GiftCardTo"),
+                    FromMsg = "Grandpa Joe",//GetStringFromReader(reader, "GiftCardFrom"),
+                    GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
+                    GCAmount = (decimal)reader["GCAmount"],
+                    };
+
+                    order.ShipToAddress = new Address {
+
+                        FirstName = "Chalice",//GetStringFromReader(reader, "ShipTo_FirstName"),
+                        LastName = "Stevens",//GetStringFromReader(reader, "ShipTo_LastName"),
+                        LineOne = "",//GetStringFromReader(reader, "ShipTo_Line1"),
+                        LineTwo = "74 N Hanley Ave, Apt A",//GetStringFromReader(reader, "ShipTo_Line2"),
+                        City = "Bozeman",//GetStringFromReader(reader, "ShipTo_City"),
+                        State = "MT",//GetStringFromReader(reader, "ShipTo_State"),
+                        Zip = "59718",//GetStringFromReader(reader, "ShipTo_ZipCode"),
+
+                    };
+
+                    SetGiftCardLabelText(order.GiftCardData);
+
+                    SetShippingLabelText(order.ShipToAddress);
 
                 }
 
@@ -168,6 +197,40 @@ namespace WindowsFormsApplication_LabelManager
            
 
 
+        }
+
+        private void SetShippingLabelText(Address Address)
+        {
+
+            ShippingLabelField.Text = Address.FirstName + " " + Address.LastName;
+            if (!String.IsNullOrEmpty(Address.LineOne))
+            {
+                ShippingLabelField.Text += "\r\n" + Address.LineOne;
+            }
+            ShippingLabelField.Text += "\r\n" + Address.LineTwo;
+            ShippingLabelField.Text += "\r\n" + Address.City + " " + Address.State + ", " + Address.Zip;
+        }
+
+        private void SetGiftCardLabelText(GiftCard GiftCard)
+        {
+            GiftCard.GCAmount = Math.Round(GiftCard.GCAmount, 2);
+            GiftCard.GCAmount.ToString();
+            
+
+            if (!String.IsNullOrEmpty(GiftCard.ToMsg))
+            {
+                ToFromLabelField.Text = "To: " + GiftCard.ToMsg;
+            }
+            if (!String.IsNullOrEmpty(GiftCard.FromMsg))
+            {
+                ToFromLabelField.Text += "\r\nFrom: " + GiftCard.FromMsg;
+                ToFromLabelField.Text += "\r\n\r\nAmount: $" + GiftCard.GCAmount;
+            }
+            else
+            {
+                ToFromLabelField.Text = "Amount: $" + GiftCard.GCAmount;
+            }
+            
         }
 
         private void UpdateControls()
@@ -225,33 +288,6 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
-        private void SetShippingLabelText()
-        {
-
-            var address1 = new Address()
-            {
-                FirstName = "Chalice",
-                LastName = "Stevens",
-                Company = "Murdoch's",
-                StreetApt = "74 N Hanley Ave, Apt A",
-                City = "Bozeman",
-                State = "MT",
-                Zip = 59718
-
-            };
-
-
-
-            string firstLine = address1.FirstName + " " + address1.LastName;
-            string secondLine = address1.Company;
-            string thirdLine = address1.StreetApt;
-            string fourthLine = address1.City + "," + address1.State + " " + address1.Zip;
-
-            string shippingAddress = firstLine + "\n" + secondLine + "\n" + thirdLine + "\n" + fourthLine;
-
-            //ShippingLabelField.Text = shippingAddress;
-
-        }
 
 
         private void ShippingLabelField_Leave(object sender, EventArgs e)
@@ -294,14 +330,8 @@ namespace WindowsFormsApplication_LabelManager
             SetupLabelObject();
 
             UpdateControls();
-
-            SetShippingLabelText();
         }
 
-        private void ObjectNameSelector_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void ToFromLabelField_TextChanged(object sender, EventArgs e)
         {
@@ -326,40 +356,48 @@ namespace WindowsFormsApplication_LabelManager
         {
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public string Company { get; set; }
-            public string StreetApt { get; set; }
+            public string LineOne { get; set; }
+            public string LineTwo { get; set; }
             public string City { get; set; }
             public string State { get; set; }
-            public int Zip { get; set; }
+            public string Zip { get; set; }
 
+        }
+
+        public class GiftCard
+        {
+            public string ToMsg { get; set; }
+            public string FromMsg { get; set; }
+            public string CardImgURL { get; set; }
+            public string IsGiftCard { get; set; }
+            public string GiftCardIsElectronicGiftCard { get; set; }
+            public decimal GCAmount { get; set; }
+            public string GCMsg { get; set; }
         }
 
         public class GiftCardOrder
         {
             public string PONum { get; set; }
             public string KiboOrderId { get; set; }
-            public string PurchasingCustomer { get; set; }
-            public string GCAmount { get; set; }
-            public bool IsGiftCard { get; set; }
-            public bool GiftCardIsElectronicGiftCard { get; set; }
+            public string CustomerFirstName { get; set; }
+            public string CustomerLastName { get; set; }
+            public string DateOrdered { get; set; }
 
-            public string CardImgURL { get; set; }
-            public string ToMsg { get; set; }
-            public string FromMsg { get; set; }
-
+            public GiftCard GiftCardData { get; set; }
             public Address ShipToAddress { get; set; }
 
-            public List<int> buildLineItemsList()
-            {
-                List<int> lineItemsList = new List<int>();
-
-
-                //add all line items associated with that Kibo order id to the list
-                //for each line item in the list add table row
-
-                return lineItemsList;
-            }
         }
+            //public List<int> buildLineItemsList()
+            //{
+            //    List<int> lineItemsList = new List<int>();
+
+
+            //    //add all line items associated with that Kibo order id to the list
+            //    //for each line item in the list add table row
+
+            //    return lineItemsList;
+            //}
+        
 
 
 

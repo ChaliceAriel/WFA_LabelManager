@@ -33,7 +33,7 @@ namespace WindowsFormsApplication_LabelManager
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.PrintLabelBtn = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.OrderGrid = new System.Windows.Forms.DataGridView();
             this.orderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.trackingNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.customerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -53,13 +53,13 @@ namespace WindowsFormsApplication_LabelManager
             this.ToFromLabelObject = new System.Windows.Forms.TextBox();
             this.GetOrdersButton = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // PrintLabelBtn
             // 
             this.PrintLabelBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.PrintLabelBtn.Location = new System.Drawing.Point(325, 163);
+            this.PrintLabelBtn.Location = new System.Drawing.Point(325, 214);
             this.PrintLabelBtn.Name = "PrintLabelBtn";
             this.PrintLabelBtn.Size = new System.Drawing.Size(131, 51);
             this.PrintLabelBtn.TabIndex = 4;
@@ -68,12 +68,12 @@ namespace WindowsFormsApplication_LabelManager
             this.PrintLabelBtn.Click += new System.EventHandler(this.PrintLabelBtn_Click);
             this.PrintLabelBtn.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PrintLabelBtn_KeyDown);
             // 
-            // dataGridView1
+            // OrderGrid
             // 
-            this.dataGridView1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Menu;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.OrderGrid.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.OrderGrid.BackgroundColor = System.Drawing.SystemColors.Menu;
+            this.OrderGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.OrderGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.orderNum,
             this.trackingNumber,
             this.customerName,
@@ -81,11 +81,11 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount,
             this.cardImg,
             this.printTwoLabels});
-            this.dataGridView1.Location = new System.Drawing.Point(13, 550);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(1288, 375);
-            this.dataGridView1.TabIndex = 4;
+            this.OrderGrid.Location = new System.Drawing.Point(13, 599);
+            this.OrderGrid.Name = "OrderGrid";
+            this.OrderGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.OrderGrid.Size = new System.Drawing.Size(1288, 375);
+            this.OrderGrid.TabIndex = 4;
             // 
             // orderNum
             // 
@@ -189,35 +189,34 @@ namespace WindowsFormsApplication_LabelManager
             // ObjectNameSelector
             // 
             this.ObjectNameSelector.FormattingEnabled = true;
-            this.ObjectNameSelector.Location = new System.Drawing.Point(13, 89);
+            this.ObjectNameSelector.Location = new System.Drawing.Point(13, 140);
             this.ObjectNameSelector.Name = "ObjectNameSelector";
             this.ObjectNameSelector.Size = new System.Drawing.Size(150, 28);
             this.ObjectNameSelector.TabIndex = 8;
-            this.ObjectNameSelector.SelectedIndexChanged += new System.EventHandler(this.ObjectNameSelector_SelectedIndexChanged);
             // 
             // ShippingLabelField
             // 
             this.ShippingLabelField.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShippingLabelField.Location = new System.Drawing.Point(13, 130);
+            this.ShippingLabelField.Location = new System.Drawing.Point(13, 181);
             this.ShippingLabelField.Multiline = true;
             this.ShippingLabelField.Name = "ShippingLabelField";
-            this.ShippingLabelField.Size = new System.Drawing.Size(306, 84);
+            this.ShippingLabelField.Size = new System.Drawing.Size(306, 110);
             this.ShippingLabelField.TabIndex = 3;
             this.ShippingLabelField.TextChanged += new System.EventHandler(this.ShippingLabelField_TextChanged);
             this.ShippingLabelField.Leave += new System.EventHandler(this.ShippingLabelField_Leave);
             // 
             // ToFromLabelField
             // 
-            this.ToFromLabelField.Location = new System.Drawing.Point(591, 130);
+            this.ToFromLabelField.Location = new System.Drawing.Point(591, 181);
             this.ToFromLabelField.Multiline = true;
             this.ToFromLabelField.Name = "ToFromLabelField";
-            this.ToFromLabelField.Size = new System.Drawing.Size(306, 84);
+            this.ToFromLabelField.Size = new System.Drawing.Size(306, 110);
             this.ToFromLabelField.TabIndex = 9;
             this.ToFromLabelField.TextChanged += new System.EventHandler(this.ToFromLabelField_TextChanged);
             // 
             // ShippingLabelObject
             // 
-            this.ShippingLabelObject.Location = new System.Drawing.Point(243, 89);
+            this.ShippingLabelObject.Location = new System.Drawing.Point(243, 140);
             this.ShippingLabelObject.Name = "ShippingLabelObject";
             this.ShippingLabelObject.ReadOnly = true;
             this.ShippingLabelObject.Size = new System.Drawing.Size(163, 26);
@@ -225,7 +224,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // ToFromLabelObject
             // 
-            this.ToFromLabelObject.Location = new System.Drawing.Point(591, 89);
+            this.ToFromLabelObject.Location = new System.Drawing.Point(591, 140);
             this.ToFromLabelObject.Name = "ToFromLabelObject";
             this.ToFromLabelObject.ReadOnly = true;
             this.ToFromLabelObject.Size = new System.Drawing.Size(163, 26);
@@ -243,11 +242,11 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(325, 291);
+            this.textBox1.Location = new System.Drawing.Point(13, 336);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(707, 199);
+            this.textBox1.Size = new System.Drawing.Size(572, 199);
             this.textBox1.TabIndex = 16;
             // 
             // Form1
@@ -266,7 +265,7 @@ namespace WindowsFormsApplication_LabelManager
             this.Controls.Add(this.BrowseBtn);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.FileNameEdit);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.OrderGrid);
             this.Controls.Add(this.PrintLabelBtn);
             this.Controls.Add(this.dateTimePicker1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
@@ -276,7 +275,7 @@ namespace WindowsFormsApplication_LabelManager
             this.Padding = new System.Windows.Forms.Padding(10);
             this.Text = "Label Manager";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -284,7 +283,7 @@ namespace WindowsFormsApplication_LabelManager
 
         #endregion
         private System.Windows.Forms.Button PrintLabelBtn;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView OrderGrid;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.TextBox FileNameEdit;
         private System.Windows.Forms.Label label1;
