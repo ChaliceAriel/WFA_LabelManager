@@ -52,14 +52,16 @@ namespace WindowsFormsApplication_LabelManager
             this.ShippingLabelObject = new System.Windows.Forms.TextBox();
             this.ToFromLabelObject = new System.Windows.Forms.TextBox();
             this.GetOrdersButton = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.OrderNumberBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // PrintLabelBtn
             // 
             this.PrintLabelBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.PrintLabelBtn.Location = new System.Drawing.Point(325, 214);
+            this.PrintLabelBtn.Location = new System.Drawing.Point(1170, 306);
             this.PrintLabelBtn.Name = "PrintLabelBtn";
             this.PrintLabelBtn.Size = new System.Drawing.Size(131, 51);
             this.PrintLabelBtn.TabIndex = 4;
@@ -81,7 +83,7 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount,
             this.cardImg,
             this.printTwoLabels});
-            this.OrderGrid.Location = new System.Drawing.Point(13, 599);
+            this.OrderGrid.Location = new System.Drawing.Point(13, 390);
             this.OrderGrid.Name = "OrderGrid";
             this.OrderGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.OrderGrid.Size = new System.Drawing.Size(1288, 375);
@@ -140,7 +142,7 @@ namespace WindowsFormsApplication_LabelManager
             this.dateTimePicker1.Location = new System.Drawing.Point(13, 15);
             this.dateTimePicker1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(393, 26);
+            this.dateTimePicker1.Size = new System.Drawing.Size(263, 26);
             this.dateTimePicker1.TabIndex = 2;
             this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
@@ -189,7 +191,7 @@ namespace WindowsFormsApplication_LabelManager
             // ObjectNameSelector
             // 
             this.ObjectNameSelector.FormattingEnabled = true;
-            this.ObjectNameSelector.Location = new System.Drawing.Point(13, 140);
+            this.ObjectNameSelector.Location = new System.Drawing.Point(56, 318);
             this.ObjectNameSelector.Name = "ObjectNameSelector";
             this.ObjectNameSelector.Size = new System.Drawing.Size(150, 28);
             this.ObjectNameSelector.TabIndex = 8;
@@ -197,7 +199,7 @@ namespace WindowsFormsApplication_LabelManager
             // ShippingLabelField
             // 
             this.ShippingLabelField.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShippingLabelField.Location = new System.Drawing.Point(13, 181);
+            this.ShippingLabelField.Location = new System.Drawing.Point(647, 155);
             this.ShippingLabelField.Multiline = true;
             this.ShippingLabelField.Name = "ShippingLabelField";
             this.ShippingLabelField.Size = new System.Drawing.Size(306, 110);
@@ -207,7 +209,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // ToFromLabelField
             // 
-            this.ToFromLabelField.Location = new System.Drawing.Point(591, 181);
+            this.ToFromLabelField.Location = new System.Drawing.Point(995, 155);
             this.ToFromLabelField.Multiline = true;
             this.ToFromLabelField.Name = "ToFromLabelField";
             this.ToFromLabelField.Size = new System.Drawing.Size(306, 110);
@@ -216,7 +218,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // ShippingLabelObject
             // 
-            this.ShippingLabelObject.Location = new System.Drawing.Point(243, 140);
+            this.ShippingLabelObject.Location = new System.Drawing.Point(647, 123);
             this.ShippingLabelObject.Name = "ShippingLabelObject";
             this.ShippingLabelObject.ReadOnly = true;
             this.ShippingLabelObject.Size = new System.Drawing.Size(163, 26);
@@ -224,7 +226,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // ToFromLabelObject
             // 
-            this.ToFromLabelObject.Location = new System.Drawing.Point(591, 140);
+            this.ToFromLabelObject.Location = new System.Drawing.Point(995, 123);
             this.ToFromLabelObject.Name = "ToFromLabelObject";
             this.ToFromLabelObject.ReadOnly = true;
             this.ToFromLabelObject.Size = new System.Drawing.Size(163, 26);
@@ -232,22 +234,36 @@ namespace WindowsFormsApplication_LabelManager
             // 
             // GetOrdersButton
             // 
-            this.GetOrdersButton.Location = new System.Drawing.Point(507, 17);
+            this.GetOrdersButton.Location = new System.Drawing.Point(193, 182);
             this.GetOrdersButton.Name = "GetOrdersButton";
-            this.GetOrdersButton.Size = new System.Drawing.Size(136, 40);
+            this.GetOrdersButton.Size = new System.Drawing.Size(145, 49);
             this.GetOrdersButton.TabIndex = 15;
-            this.GetOrdersButton.Text = "Get Orders";
+            this.GetOrdersButton.Text = "Submit";
             this.GetOrdersButton.UseVisualStyleBackColor = true;
             this.GetOrdersButton.Click += new System.EventHandler(this.GetOrdersButton_Click);
             // 
-            // textBox1
+            // dateTimePicker2
             // 
-            this.textBox1.Location = new System.Drawing.Point(13, 336);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(572, 199);
-            this.textBox1.TabIndex = 16;
+            this.dateTimePicker2.Location = new System.Drawing.Point(309, 15);
+            this.dateTimePicker2.Name = "dateTimePicker2";
+            this.dateTimePicker2.Size = new System.Drawing.Size(267, 26);
+            this.dateTimePicker2.TabIndex = 16;
+            // 
+            // OrderNumberBox
+            // 
+            this.OrderNumberBox.Location = new System.Drawing.Point(193, 137);
+            this.OrderNumberBox.Name = "OrderNumberBox";
+            this.OrderNumberBox.Size = new System.Drawing.Size(145, 26);
+            this.OrderNumberBox.TabIndex = 17;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(0, 137);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(187, 20);
+            this.label2.TabIndex = 18;
+            this.label2.Text = "Enter Kibo or PO Number";
             // 
             // Form1
             // 
@@ -255,7 +271,9 @@ namespace WindowsFormsApplication_LabelManager
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(1314, 938);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.OrderNumberBox);
+            this.Controls.Add(this.dateTimePicker2);
             this.Controls.Add(this.GetOrdersButton);
             this.Controls.Add(this.ToFromLabelObject);
             this.Controls.Add(this.ShippingLabelObject);
@@ -302,7 +320,9 @@ namespace WindowsFormsApplication_LabelManager
         private System.Windows.Forms.TextBox ShippingLabelObject;
         private System.Windows.Forms.TextBox ToFromLabelObject;
         private System.Windows.Forms.Button GetOrdersButton;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.TextBox OrderNumberBox;
+        private System.Windows.Forms.Label label2;
     }
 }
 

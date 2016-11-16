@@ -27,9 +27,12 @@ namespace WindowsFormsApplication_LabelManager
 
         private void GetOrdersButton_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("16051178");
-            //GetOrders("12120608");
-            GetOneOrder("PO5278A151");
+            if (string.IsNullOrWhiteSpace(OrderNumberBox.Text))
+            {
+                MessageBox.Show("Please enter a valid Kibo Order Number or PO Number");
+            }
+            //12652028 12663347 PO6132A541
+            GetOneOrder(OrderNumberBox.Text);
 
         }
 
@@ -108,48 +111,60 @@ namespace WindowsFormsApplication_LabelManager
 
                 sqlConnection.Open();
 
+
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.HasRows)
                 {
-                    GiftCardOrder order = new GiftCardOrder {
-                    
-                    PONum = GetStringFromReader(reader, "TrackingNumber"),
-                    KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
-                    DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
-                    CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
-                    CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
 
-                    };
+                    while (reader.Read())
+                    {
+                        GiftCardOrder order = new GiftCardOrder
+                        {
 
-                    
-                    order.GiftCardData = new GiftCard {
+                            PONum = GetStringFromReader(reader, "TrackingNumber"),
+                            KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
+                            DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
+                            CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
+                            CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
 
-                    CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
-                    ToMsg = "Michael",//GetStringFromReader(reader, "GiftCardTo"),
-                    FromMsg = "Grandpa Joe",//GetStringFromReader(reader, "GiftCardFrom"),
-                    GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
-                    GCAmount = (decimal)reader["GCAmount"],
-                    };
+                        };
 
-                    order.ShipToAddress = new Address {
 
-                        FirstName = "Chalice",//GetStringFromReader(reader, "ShipTo_FirstName"),
-                        LastName = "Stevens",//GetStringFromReader(reader, "ShipTo_LastName"),
-                        LineOne = "",//GetStringFromReader(reader, "ShipTo_Line1"),
-                        LineTwo = "74 N Hanley Ave, Apt A",//GetStringFromReader(reader, "ShipTo_Line2"),
-                        City = "Bozeman",//GetStringFromReader(reader, "ShipTo_City"),
-                        State = "MT",//GetStringFromReader(reader, "ShipTo_State"),
-                        Zip = "59718",//GetStringFromReader(reader, "ShipTo_ZipCode"),
+                        order.GiftCardData = new GiftCard
+                        {
 
-                    };
+                            CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
+                            ToMsg = GetStringFromReader(reader, "GiftCardTo"),
+                            FromMsg = GetStringFromReader(reader, "GiftCardFrom"),
+                            GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
+                            GCAmount = (decimal)reader["GCAmount"],
+                        };
 
-                    SetGiftCardLabelText(order.GiftCardData);
+                        order.ShipToAddress = new Address
+                        {
 
-                    SetShippingLabelText(order.ShipToAddress);
+                            FirstName = GetStringFromReader(reader, "ShipTo_FirstName"),
+                            LastName = GetStringFromReader(reader, "ShipTo_LastName"),
+                            LineOne = GetStringFromReader(reader, "ShipTo_Line1"),
+                            LineTwo = GetStringFromReader(reader, "ShipTo_Line2"),
+                            City = GetStringFromReader(reader, "ShipTo_City"),
+                            State = GetStringFromReader(reader, "ShipTo_State"),
+                            Zip = GetStringFromReader(reader, "ShipTo_ZipCode"),
 
+                        };
+
+
+                        SetGiftCardLabelText(order.GiftCardData);
+
+                        SetShippingLabelText(order.ShipToAddress);
+
+                    }
                 }
-
+                else
+                {
+                    MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum+"'.");
+                }
             }
 
         }
@@ -207,7 +222,10 @@ namespace WindowsFormsApplication_LabelManager
             {
                 ShippingLabelField.Text += "\r\n" + Address.LineOne;
             }
-            ShippingLabelField.Text += "\r\n" + Address.LineTwo;
+            if (!String.IsNullOrEmpty(Address.LineTwo))
+            {
+                ShippingLabelField.Text += "\r\n" + Address.LineTwo;
+            }
             ShippingLabelField.Text += "\r\n" + Address.City + " " + Address.State + ", " + Address.Zip;
         }
 
@@ -309,7 +327,6 @@ namespace WindowsFormsApplication_LabelManager
                     printParams.RollSelection = (RollSelection)Enum.Parse(typeof(RollSelection), "Auto");
                 }
 
-                
                 _label.Print(printer, printParams);
             }
             else
@@ -387,6 +404,7 @@ namespace WindowsFormsApplication_LabelManager
             public Address ShipToAddress { get; set; }
 
         }
+
             //public List<int> buildLineItemsList()
             //{
             //    List<int> lineItemsList = new List<int>();
@@ -401,24 +419,24 @@ namespace WindowsFormsApplication_LabelManager
 
 
 
-        class LabelFont : IFontInfo
-        {
-            public string FontName { get; set; }
+        //public class LabelFont : IFontInfo
+        //{
+        //    public string FontName { get; set; }
 
-            public double FontSize { get; set; }
+        //    public double FontSize { get; set; }
 
-            public DYMO.Label.Framework.FontStyle FontStyle { get; set; }
+        //    public DYMO.Label.Framework.FontStyle FontStyle { get; set; }
 
-            //FontStyle Enum:
+        //    //FontStyle Enum:
             
-            //None	    0	Normal style text.
-            //Bold	    1	Bold text.
-            //Italic    2	Italic text.
-            //Underline 4	Underline text.
-            //Strikeout 8	Strikeout text.
+        //    //None	    0	Normal style text.
+        //    //Bold	    1	Bold text.
+        //    //Italic    2	Italic text.
+        //    //Underline 4	Underline text.
+        //    //Strikeout 8	Strikeout text.
 
 
-        }
+        //}
 
     }
 
