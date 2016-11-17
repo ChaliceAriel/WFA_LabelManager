@@ -17,12 +17,12 @@ namespace WindowsFormsApplication_LabelManager
 
     public partial class Form1 : Form
     {
+        
         public Form1()
         {
-
             InitializeComponent();
-
-
+            
+            this.Text = "Murdoch's Gift Card Label Manager";
         }
 
         private void GetOrdersButton_Click(object sender, EventArgs e)
@@ -31,22 +31,15 @@ namespace WindowsFormsApplication_LabelManager
             {
                 MessageBox.Show("Please enter a valid Kibo Order Number or PO Number");
             }
-            //12652028 12663347 PO6132A541
-            GetOneOrder(OrderNumberBox.Text);
-
-        }
-
-        public string GetStringFromReader(SqlDataReader instance, string col)
-        {
-            if (instance[col] == DBNull.Value)
-            {
-                return string.Empty;
-            }
             else
             {
-                return (string)instance[col];
+                //12652028 12663347 PO6132A541
+                GetOneOrder(OrderNumberBox.Text);
             }
+
         }
+
+
 
         //public List<GiftCardOrder> GetOrders(string orderNum)
         //{
@@ -89,34 +82,55 @@ namespace WindowsFormsApplication_LabelManager
         //    }
 
         //}
-        public void AddSqlParameter(SqlCommand command, string orderNum)
-        {
-            SqlParameter param = new SqlParameter(
-                "@OrderNumber", SqlDbType.VarChar);
-            param.Value = orderNum;
-            command.Parameters.Add(param);
-        }
+
+
+        //public void AddSqlParameter(SqlCommand command, string orderNum)
+        //{
+        //    SqlParameter param = new SqlParameter(
+        //        "@OrderNumber", SqlDbType.VarChar);
+        //    param.Value = orderNum;
+        //    command.Parameters.Add(param);
+        //}
 
         public void GetOneOrder(string orderNum)
         {
+            SqlDataAdapter dataAdapter = new SqlDataAdapter();
+            DataTable dataTable = new DataTable();
+
             string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
+                
                 SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForOrder", sqlConnection);
 
+                command.Parameters.Add(new SqlParameter("@OrderNumber", orderNum));
                 command.CommandType = CommandType.StoredProcedure;
-                AddSqlParameter(command, orderNum);
                 command.Connection = sqlConnection;
 
+                dataAdapter.SelectCommand = command;
+
+                dataTable.Locale = System.Globalization.CultureInfo.InvariantCulture;
+                dataAdapter.Fill(dataTable);
+
+
+                dataGridView1.DataSource = dataTable;
+
+                dataGridView1.Columns.Remove("IsGiftCard");
+                dataGridView1.Columns.Remove("GiftCardIsElectronicGiftCard");
+
+                AdjustColumnOrder();
+                HideColumns();
+                AdjustColumnWidths();
+                SetHeaderText();
+
+
                 sqlConnection.Open();
-
-
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows)
+                if (reader.HasRows && !(dataTable.Rows.Count > 1))
                 {
-
+           
                     while (reader.Read())
                     {
                         GiftCardOrder order = new GiftCardOrder
@@ -129,7 +143,6 @@ namespace WindowsFormsApplication_LabelManager
                             CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
 
                         };
-
 
                         order.GiftCardData = new GiftCard
                         {
@@ -161,6 +174,11 @@ namespace WindowsFormsApplication_LabelManager
 
                     }
                 }
+                if (reader.HasRows && dataTable.Rows.Count > 1)
+                {
+                    reader.GetValues(GiftCard[]);
+                }
+
                 else
                 {
                     MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum+"'.");
@@ -169,14 +187,79 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
+        public string GetStringFromReader(SqlDataReader instance, string col)
+        {
+            if (instance[col] == DBNull.Value)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return (string)instance[col];
+            }
+        }
 
+        private void HideColumns()
+        {
+            
+            dataGridView1.Columns["BillTo_FirstName"].Visible = false;
+            dataGridView1.Columns["GiftCardMessage"].Visible = false;
+            dataGridView1.Columns["LineItemId"].Visible = false;
+            dataGridView1.Columns["GiftCardRecipientEmail"].Visible = false;
+            dataGridView1.Columns["ShipTo_Line1"].Visible = false;
+            dataGridView1.Columns["ShipTo_Line2"].Visible = false;
+            dataGridView1.Columns["ShipTo_City"].Visible = false;
+            dataGridView1.Columns["ShipTo_State"].Visible = false;
+            dataGridView1.Columns["ShipTo_ZipCode"].Visible = false;
+            dataGridView1.Columns["BillTo_Line1"].Visible = false;
+            dataGridView1.Columns["BillTo_Line2"].Visible = false;
+            dataGridView1.Columns["BillTo_City"].Visible = false;
+            dataGridView1.Columns["BillTo_State"].Visible = false;
+            dataGridView1.Columns["BillTo_ZipCode"].Visible = false;
+            dataGridView1.Columns["ShipTo_FirstName"].Visible = false;
+            dataGridView1.Columns["ShipTo_LastName"].Visible = false;
+            dataGridView1.Columns["PaidAmount"].Visible = false;
+
+        }
+
+        private void AdjustColumnOrder()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].DisplayIndex = 0;
+            dataGridView1.Columns["TrackingNumber"].DisplayIndex = 1;
+            dataGridView1.Columns["BillTo_LastName"].DisplayIndex = 2;
+            dataGridView1.Columns["DateOrdered"].DisplayIndex = 3;
+            dataGridView1.Columns["GCAmount"].DisplayIndex = 4;
+            dataGridView1.Columns["GiftCardTo"].DisplayIndex = 5;
+            dataGridView1.Columns["GiftCardFrom"].DisplayIndex = 6;
+            dataGridView1.Columns["GiftCardImageURL"].DisplayIndex = 7;
+        }
+
+        private void AdjustColumnWidths()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].Width = 130;
+            dataGridView1.Columns["TrackingNumber"].Width = 140;
+            dataGridView1.Columns["BillTo_LastName"].Width = 130;
+            dataGridView1.Columns["DateOrdered"].Width = 110;
+            dataGridView1.Columns["GCAmount"].Width = 120;
+            dataGridView1.Columns["GiftCardTo"].Width = 130;
+            dataGridView1.Columns["GiftCardFrom"].Width = 140;
+            dataGridView1.Columns["GiftCardImageURL"].Width = 320;
+        }
+
+        private void SetHeaderText()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].HeaderText = "Kibo Order #";
+            dataGridView1.Columns["TrackingNumber"].HeaderText = "PO/Tracking #";
+            dataGridView1.Columns["BillTo_LastName"].HeaderText = "Purchasing Customer";
+            dataGridView1.Columns["DateOrdered"].HeaderText = "Date Ordered";
+            dataGridView1.Columns["GCAmount"].HeaderText = "Gift Card Amount";
+            dataGridView1.Columns["GiftCardTo"].HeaderText = "To Message";
+            dataGridView1.Columns["GiftCardFrom"].HeaderText = "From Message";
+            dataGridView1.Columns["GiftCardImageURL"].HeaderText = "Gift Card";
+        }
         private void SetupLabelObject()
         {
-            // clear edit control
-            //ObjectDataEdit.Clear();
 
-            // clear all items first
-            //ObjectNameSelector.Items.Clear();
             ShippingLabelObject.Clear();
 
             if (_label == null)
@@ -188,11 +271,10 @@ namespace WindowsFormsApplication_LabelManager
             {
                 if (!string.IsNullOrEmpty(objName))
                 {
-                    //ObjectNameSelector.Items.Add(objName);
+                    
                     labelField.Add(objName);
                 }
-                //if (ObjectNameSelector.Items.Count > 0)
-                //ObjectNameSelector.SelectedIndex = 0;
+
             }
 
             ShippingLabelObject.Text = labelField[0];
@@ -208,9 +290,6 @@ namespace WindowsFormsApplication_LabelManager
                 ToFromLabelObject.Text = " ";
                 MessageBox.Show("The label template selected has only one field.");
             }
-
-           
-
 
         }
 
@@ -342,13 +421,14 @@ namespace WindowsFormsApplication_LabelManager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            //dataGridView1.DataSource = bindingSource1;
             // populate label objects
             SetupLabelObject();
 
             UpdateControls();
+            
+        
         }
-
 
         private void ToFromLabelField_TextChanged(object sender, EventArgs e)
         {
@@ -362,9 +442,8 @@ namespace WindowsFormsApplication_LabelManager
             catch (NullReferenceException)
             {
 
-                MessageBox.Show("Please select a label template file before editing or creating a new label.");
-                FileNameEdit.BackColor = System.Drawing.Color.Tomato;
-                BrowseBtn.FlatAppearance.BorderColor = System.Drawing.Color.Tomato;
+                //MessageBox.Show("Please select a label template file before editing or creating a new label.");
+
             }
 
         }
@@ -405,17 +484,19 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
-            //public List<int> buildLineItemsList()
-            //{
-            //    List<int> lineItemsList = new List<int>();
 
 
-            //    //add all line items associated with that Kibo order id to the list
-            //    //for each line item in the list add table row
+        //public List<int> buildLineItemsList()
+        //{
+        //    List<int> lineItemsList = new List<int>();
 
-            //    return lineItemsList;
-            //}
-        
+
+        //    //add all line items associated with that Kibo order id to the list
+        //    //for each line item in the list add table row
+
+        //    return lineItemsList;
+        //}
+
 
 
 
@@ -428,7 +509,7 @@ namespace WindowsFormsApplication_LabelManager
         //    public DYMO.Label.Framework.FontStyle FontStyle { get; set; }
 
         //    //FontStyle Enum:
-            
+
         //    //None	    0	Normal style text.
         //    //Bold	    1	Bold text.
         //    //Italic    2	Italic text.

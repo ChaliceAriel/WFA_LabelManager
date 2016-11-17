@@ -55,7 +55,9 @@ namespace WindowsFormsApplication_LabelManager
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             this.OrderNumberBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // PrintLabelBtn
@@ -83,10 +85,10 @@ namespace WindowsFormsApplication_LabelManager
             this.toFromAmount,
             this.cardImg,
             this.printTwoLabels});
-            this.OrderGrid.Location = new System.Drawing.Point(13, 390);
+            this.OrderGrid.Location = new System.Drawing.Point(13, 408);
             this.OrderGrid.Name = "OrderGrid";
             this.OrderGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.OrderGrid.Size = new System.Drawing.Size(1288, 375);
+            this.OrderGrid.Size = new System.Drawing.Size(1288, 142);
             this.OrderGrid.TabIndex = 4;
             // 
             // orderNum
@@ -265,12 +267,22 @@ namespace WindowsFormsApplication_LabelManager
             this.label2.TabIndex = 18;
             this.label2.Text = "Enter Kibo or PO Number";
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.dataGridView1.Location = new System.Drawing.Point(10, 778);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(1294, 150);
+            this.dataGridView1.TabIndex = 20;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.ClientSize = new System.Drawing.Size(1314, 938);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.OrderNumberBox);
             this.Controls.Add(this.dateTimePicker2);
@@ -294,6 +306,7 @@ namespace WindowsFormsApplication_LabelManager
             this.Text = "Label Manager";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.OrderGrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -323,6 +336,7 @@ namespace WindowsFormsApplication_LabelManager
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
         private System.Windows.Forms.TextBox OrderNumberBox;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.DataGridView dataGridView1;
     }
 }
 
