@@ -21,11 +21,12 @@ namespace WindowsFormsApplication_LabelManager
         public Form1()
         {
             InitializeComponent();
-            
+            PrintLabelBtn.BringToFront();
+
             this.Text = "Murdoch's Gift Card Label Manager";
         }
 
-        private void GetOrdersButton_Click(object sender, EventArgs e)
+        private void GetOrderButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(OrderNumberBox.Text))
             {
@@ -36,6 +37,15 @@ namespace WindowsFormsApplication_LabelManager
                 //12652028 12663347 PO6132A541
                 GetOneOrder(OrderNumberBox.Text);
             }
+
+        }
+
+        private void SearchByDate_Click(object sender, EventArgs e)
+        {
+
+                var date = SelectDate.Value.Date;
+
+                GetOrdersByDate(date);
 
         }
 
@@ -92,8 +102,19 @@ namespace WindowsFormsApplication_LabelManager
         //    command.Parameters.Add(param);
         //}
 
+        public List<GiftCardOrder> orderList = new List<GiftCardOrder>();
+        public List<GiftCardOrder> orderListByDate = new List<GiftCardOrder>();
+
+        public List<GiftCard> giftCardList = new List<GiftCard>();
+        public List<GiftCard> giftCardListByDate = new List<GiftCard>();
+
+
         public void GetOneOrder(string orderNum)
         {
+            //clear Lists first to remove SQL data from previous query
+            giftCardList.Clear();
+            orderList.Clear();
+
             SqlDataAdapter dataAdapter = new SqlDataAdapter();
             DataTable dataTable = new DataTable();
 
@@ -101,9 +122,9 @@ namespace WindowsFormsApplication_LabelManager
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                
+                //Create SQL connection using stored procedure
                 SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForOrder", sqlConnection);
-
+                //Add parameter to stored procedure
                 command.Parameters.Add(new SqlParameter("@OrderNumber", orderNum));
                 command.CommandType = CommandType.StoredProcedure;
                 command.Connection = sqlConnection;
@@ -113,12 +134,13 @@ namespace WindowsFormsApplication_LabelManager
                 dataTable.Locale = System.Globalization.CultureInfo.InvariantCulture;
                 dataAdapter.Fill(dataTable);
 
-
+                //Tie UI GridView to dataTable
                 dataGridView1.DataSource = dataTable;
 
+                //Remove boolean (checkbox) columns from grid
                 dataGridView1.Columns.Remove("IsGiftCard");
                 dataGridView1.Columns.Remove("GiftCardIsElectronicGiftCard");
-
+                //Improve appearance, organize data grid, and only show necessary columns
                 AdjustColumnOrder();
                 HideColumns();
                 AdjustColumnWidths();
@@ -126,13 +148,16 @@ namespace WindowsFormsApplication_LabelManager
 
 
                 sqlConnection.Open();
+
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows && !(dataTable.Rows.Count > 1))
+                if (reader.HasRows)
                 {
-           
+
                     while (reader.Read())
                     {
+                        //create new objects from each row of data
+
                         GiftCardOrder order = new GiftCardOrder
                         {
 
@@ -168,20 +193,127 @@ namespace WindowsFormsApplication_LabelManager
                         };
 
 
-                        SetGiftCardLabelText(order.GiftCardData);
-
-                        SetShippingLabelText(order.ShipToAddress);
-
+                        //add new objects to empty object lists
+                        giftCardList.Add(order.GiftCardData);
+                        orderList.Add(order);
                     }
-                }
-                if (reader.HasRows && dataTable.Rows.Count > 1)
-                {
-                    reader.GetValues(GiftCard[]);
+
+                    //Set Label field text to first index (row 0) and set that row as selected
+                    dataGridView2.ClearSelection();
+                    dataGridView1.Rows[0].Selected = true;
+                    SetGiftCardLabelText(giftCardList[0]);
+                    SetShippingLabelText(orderList[0].ShipToAddress);
                 }
 
                 else
                 {
                     MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum+"'.");
+                }
+            }
+
+        }
+
+        public void GetOrdersByDate(DateTime date)
+        {
+            //clear Lists first to remove SQL data from previous query
+            giftCardListByDate.Clear();
+            orderListByDate.Clear();
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter();
+            DataTable dataTable = new DataTable();
+
+            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
+
+            using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+            {
+                //Create SQL connection using stored procedure
+                SqlCommand command = new SqlCommand("mur_GetMsgAndShippingInfoForGCOrders_ByDate", sqlConnection);
+                //Add parameter to stored procedure
+                command.Parameters.Add(new SqlParameter("@StartDate", date));
+                command.CommandType = CommandType.StoredProcedure;
+                command.Connection = sqlConnection;
+
+                dataAdapter.SelectCommand = command;
+
+                dataTable.Locale = System.Globalization.CultureInfo.InvariantCulture;
+                dataAdapter.Fill(dataTable);
+
+                //Tie UI GridView to dataTable
+                dataGridView2.DataSource = dataTable;
+
+                //Remove boolean (checkbox) columns from grid
+                dataGridView2.Columns.Remove("IsGiftCard");
+                dataGridView2.Columns.Remove("GiftCardIsElectronicGiftCard");
+
+                //Improve appearance, organize data grid, and only show necessary columns
+                //AdjustColumnOrder();
+                //HideColumns();
+                //AdjustColumnWidths();
+                //SetHeaderText();
+
+
+                sqlConnection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+
+                    while (reader.Read())
+                    {
+                        //create new objects from each row of data
+
+                        GiftCardOrder order = new GiftCardOrder
+                        {
+
+                            PONum = GetStringFromReader(reader, "TrackingNumber"),
+                            KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
+                            DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
+                            CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
+                            CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
+
+                        };
+
+                        order.GiftCardData = new GiftCard
+                        {
+
+                            CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
+                            ToMsg = GetStringFromReader(reader, "GiftCardTo"),
+                            FromMsg = GetStringFromReader(reader, "GiftCardFrom"),
+                            GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
+                            GCAmount = (decimal)reader["GCAmount"],
+                        };
+
+                        order.ShipToAddress = new Address
+                        {
+
+                            FirstName = GetStringFromReader(reader, "ShipTo_FirstName"),
+                            LastName = GetStringFromReader(reader, "ShipTo_LastName"),
+                            LineOne = GetStringFromReader(reader, "ShipTo_Line1"),
+                            LineTwo = GetStringFromReader(reader, "ShipTo_Line2"),
+                            City = GetStringFromReader(reader, "ShipTo_City"),
+                            State = GetStringFromReader(reader, "ShipTo_State"),
+                            Zip = GetStringFromReader(reader, "ShipTo_ZipCode"),
+
+                        };
+
+
+                        //add new objects to empty object lists
+                        giftCardListByDate.Add(order.GiftCardData);
+                        orderListByDate.Add(order);
+                    }
+
+                    //Set Label field text to first index (row 0) and set that row as selected
+                    dataGridView1.ClearSelection();
+                    dataGridView2.Rows[0].Selected = true;
+                    SetGiftCardLabelText(giftCardListByDate[0]);
+                    SetShippingLabelText(orderListByDate[0].ShipToAddress);
+
+                }
+
+                else
+                {
+                    MessageBox.Show("I'm sorry. No gift card orders were found for this date: " + date + ".");
                 }
             }
 
@@ -199,64 +331,6 @@ namespace WindowsFormsApplication_LabelManager
             }
         }
 
-        private void HideColumns()
-        {
-            
-            dataGridView1.Columns["BillTo_FirstName"].Visible = false;
-            dataGridView1.Columns["GiftCardMessage"].Visible = false;
-            dataGridView1.Columns["LineItemId"].Visible = false;
-            dataGridView1.Columns["GiftCardRecipientEmail"].Visible = false;
-            dataGridView1.Columns["ShipTo_Line1"].Visible = false;
-            dataGridView1.Columns["ShipTo_Line2"].Visible = false;
-            dataGridView1.Columns["ShipTo_City"].Visible = false;
-            dataGridView1.Columns["ShipTo_State"].Visible = false;
-            dataGridView1.Columns["ShipTo_ZipCode"].Visible = false;
-            dataGridView1.Columns["BillTo_Line1"].Visible = false;
-            dataGridView1.Columns["BillTo_Line2"].Visible = false;
-            dataGridView1.Columns["BillTo_City"].Visible = false;
-            dataGridView1.Columns["BillTo_State"].Visible = false;
-            dataGridView1.Columns["BillTo_ZipCode"].Visible = false;
-            dataGridView1.Columns["ShipTo_FirstName"].Visible = false;
-            dataGridView1.Columns["ShipTo_LastName"].Visible = false;
-            dataGridView1.Columns["PaidAmount"].Visible = false;
-
-        }
-
-        private void AdjustColumnOrder()
-        {
-            dataGridView1.Columns["ShopatronOrderId"].DisplayIndex = 0;
-            dataGridView1.Columns["TrackingNumber"].DisplayIndex = 1;
-            dataGridView1.Columns["BillTo_LastName"].DisplayIndex = 2;
-            dataGridView1.Columns["DateOrdered"].DisplayIndex = 3;
-            dataGridView1.Columns["GCAmount"].DisplayIndex = 4;
-            dataGridView1.Columns["GiftCardTo"].DisplayIndex = 5;
-            dataGridView1.Columns["GiftCardFrom"].DisplayIndex = 6;
-            dataGridView1.Columns["GiftCardImageURL"].DisplayIndex = 7;
-        }
-
-        private void AdjustColumnWidths()
-        {
-            dataGridView1.Columns["ShopatronOrderId"].Width = 130;
-            dataGridView1.Columns["TrackingNumber"].Width = 140;
-            dataGridView1.Columns["BillTo_LastName"].Width = 130;
-            dataGridView1.Columns["DateOrdered"].Width = 110;
-            dataGridView1.Columns["GCAmount"].Width = 120;
-            dataGridView1.Columns["GiftCardTo"].Width = 130;
-            dataGridView1.Columns["GiftCardFrom"].Width = 140;
-            dataGridView1.Columns["GiftCardImageURL"].Width = 320;
-        }
-
-        private void SetHeaderText()
-        {
-            dataGridView1.Columns["ShopatronOrderId"].HeaderText = "Kibo Order #";
-            dataGridView1.Columns["TrackingNumber"].HeaderText = "PO/Tracking #";
-            dataGridView1.Columns["BillTo_LastName"].HeaderText = "Purchasing Customer";
-            dataGridView1.Columns["DateOrdered"].HeaderText = "Date Ordered";
-            dataGridView1.Columns["GCAmount"].HeaderText = "Gift Card Amount";
-            dataGridView1.Columns["GiftCardTo"].HeaderText = "To Message";
-            dataGridView1.Columns["GiftCardFrom"].HeaderText = "From Message";
-            dataGridView1.Columns["GiftCardImageURL"].HeaderText = "Gift Card";
-        }
         private void SetupLabelObject()
         {
 
@@ -321,7 +395,7 @@ namespace WindowsFormsApplication_LabelManager
             if (!String.IsNullOrEmpty(GiftCard.FromMsg))
             {
                 ToFromLabelField.Text += "\r\nFrom: " + GiftCard.FromMsg;
-                ToFromLabelField.Text += "\r\n\r\nAmount: $" + GiftCard.GCAmount;
+                ToFromLabelField.Text += "\r\nAmount: $" + GiftCard.GCAmount;
             }
             else
             {
@@ -345,6 +419,108 @@ namespace WindowsFormsApplication_LabelManager
         private void FileNameEdit_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataGridView2.SelectedRows.Count > 0)
+                {
+                    dataGridView2.ClearSelection();
+                }
+
+                if (dataGridView1.SelectedRows.Count > 0)
+                {
+                    var index = dataGridView1.CurrentCell.RowIndex;
+                    SetLabelsToSelectedRow(index);
+                }
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("No row has been selected for single order view.");
+            }
+
+        }
+
+        private void dataGridView2_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataGridView1.SelectedRows.Count > 0)
+                {
+                    dataGridView1.ClearSelection();
+                }
+                if (dataGridView2.SelectedRows.Count > 0)
+                {
+                    var index = dataGridView2.CurrentCell.RowIndex;
+                    SetLabelsToSelectedRow2(index);
+                }
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("No row has been selected for order date view.");
+            }
+        }
+
+        public void SetLabelsToSelectedRow(int selectedRowIndex)
+        {
+            int i = selectedRowIndex;
+
+            var row = dataGridView1.Rows[i];
+
+            var giftCardData = new GiftCard
+            {
+                ToMsg = row.Cells["GiftCardTo"].Value.ToString(),
+                FromMsg = row.Cells["GiftCardFrom"].Value.ToString(),
+                GCAmount = (decimal)row.Cells["GCAmount"].Value,
+            };
+
+            var shipToAddress = new Address
+            {
+
+                FirstName = row.Cells["ShipTo_FirstName"].Value.ToString(),
+                LastName = row.Cells["ShipTo_LastName"].Value.ToString(),
+                LineOne = row.Cells["ShipTo_Line1"].Value.ToString(),
+                LineTwo = row.Cells["ShipTo_Line2"].Value.ToString(),
+                City = row.Cells["ShipTo_City"].Value.ToString(),
+                State = row.Cells["ShipTo_State"].Value.ToString(),
+                Zip = row.Cells["ShipTo_ZipCode"].Value.ToString(),
+
+            };
+
+            SetGiftCardLabelText(giftCardData);
+            SetShippingLabelText(shipToAddress);
+        }
+
+        public void SetLabelsToSelectedRow2(int selectedRowIndex)
+        {
+            int i = selectedRowIndex;
+
+            var row = dataGridView2.Rows[i];
+
+            var giftCardData = new GiftCard
+            {
+                ToMsg = row.Cells["GiftCardTo"].Value.ToString(),
+                FromMsg = row.Cells["GiftCardFrom"].Value.ToString(),
+                GCAmount = (decimal)row.Cells["GCAmount"].Value,
+            };
+
+            var shipToAddress = new Address
+            {
+
+                FirstName = row.Cells["ShipTo_FirstName"].Value.ToString(),
+                LastName = row.Cells["ShipTo_LastName"].Value.ToString(),
+                LineOne = row.Cells["ShipTo_Line1"].Value.ToString(),
+                LineTwo = row.Cells["ShipTo_Line2"].Value.ToString(),
+                City = row.Cells["ShipTo_City"].Value.ToString(),
+                State = row.Cells["ShipTo_State"].Value.ToString(),
+                Zip = row.Cells["ShipTo_ZipCode"].Value.ToString(),
+
+            };
+
+            SetGiftCardLabelText(giftCardData);
+            SetShippingLabelText(shipToAddress);
         }
 
         private void BrowseBtn_Click(object sender, EventArgs e)
@@ -448,6 +624,8 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
+        // DEFINE OBJECTS
+
         public class Address
         {
             public string FirstName { get; set; }
@@ -484,41 +662,71 @@ namespace WindowsFormsApplication_LabelManager
 
         }
 
+        // METHODS FOR ADJUSTING DATAGRID DISPLAY
 
+        private void HideColumns()
+        {
 
-        //public List<int> buildLineItemsList()
-        //{
-        //    List<int> lineItemsList = new List<int>();
+            dataGridView1.Columns["BillTo_FirstName"].Visible = false;
+            dataGridView1.Columns["GiftCardMessage"].Visible = false;
+            dataGridView1.Columns["LineItemId"].Visible = false;
+            dataGridView1.Columns["GiftCardRecipientEmail"].Visible = false;
+            dataGridView1.Columns["ShipTo_Line1"].Visible = false;
+            dataGridView1.Columns["ShipTo_Line2"].Visible = false;
+            dataGridView1.Columns["ShipTo_City"].Visible = false;
+            dataGridView1.Columns["ShipTo_State"].Visible = false;
+            dataGridView1.Columns["ShipTo_ZipCode"].Visible = false;
+            dataGridView1.Columns["BillTo_Line1"].Visible = false;
+            dataGridView1.Columns["BillTo_Line2"].Visible = false;
+            dataGridView1.Columns["BillTo_City"].Visible = false;
+            dataGridView1.Columns["BillTo_State"].Visible = false;
+            dataGridView1.Columns["BillTo_ZipCode"].Visible = false;
+            dataGridView1.Columns["ShipTo_FirstName"].Visible = false;
+            dataGridView1.Columns["ShipTo_LastName"].Visible = false;
+            dataGridView1.Columns["PaidAmount"].Visible = false;
 
+        }
 
-        //    //add all line items associated with that Kibo order id to the list
-        //    //for each line item in the list add table row
+        private void AdjustColumnOrder()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].DisplayIndex = 0;
+            dataGridView1.Columns["TrackingNumber"].DisplayIndex = 1;
+            dataGridView1.Columns["BillTo_LastName"].DisplayIndex = 2;
+            dataGridView1.Columns["DateOrdered"].DisplayIndex = 3;
+            dataGridView1.Columns["GCAmount"].DisplayIndex = 4;
+            dataGridView1.Columns["GiftCardTo"].DisplayIndex = 5;
+            dataGridView1.Columns["GiftCardFrom"].DisplayIndex = 6;
+            dataGridView1.Columns["GiftCardImageURL"].DisplayIndex = 7;
+        }
 
-        //    return lineItemsList;
-        //}
+        private void AdjustColumnWidths()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].Width = 130;
+            dataGridView1.Columns["TrackingNumber"].Width = 140;
+            dataGridView1.Columns["BillTo_LastName"].Width = 130;
+            dataGridView1.Columns["DateOrdered"].Width = 110;
+            dataGridView1.Columns["GCAmount"].Width = 120;
+            dataGridView1.Columns["GiftCardTo"].Width = 130;
+            dataGridView1.Columns["GiftCardFrom"].Width = 140;
+            dataGridView1.Columns["GiftCardImageURL"].Width = 320;
+        }
 
+        private void SetHeaderText()
+        {
+            dataGridView1.Columns["ShopatronOrderId"].HeaderText = "Kibo Order #";
+            dataGridView1.Columns["TrackingNumber"].HeaderText = "PO/Tracking #";
+            dataGridView1.Columns["BillTo_LastName"].HeaderText = "Purchasing Customer";
+            dataGridView1.Columns["DateOrdered"].HeaderText = "Date Ordered";
+            dataGridView1.Columns["GCAmount"].HeaderText = "Gift Card Amount";
+            dataGridView1.Columns["GiftCardTo"].HeaderText = "To Message";
+            dataGridView1.Columns["GiftCardFrom"].HeaderText = "From Message";
+            dataGridView1.Columns["GiftCardImageURL"].HeaderText = "Gift Card";
+        }
 
+        private void label2_Click(object sender, EventArgs e)
+        {
 
-
-        //public class LabelFont : IFontInfo
-        //{
-        //    public string FontName { get; set; }
-
-        //    public double FontSize { get; set; }
-
-        //    public DYMO.Label.Framework.FontStyle FontStyle { get; set; }
-
-        //    //FontStyle Enum:
-
-        //    //None	    0	Normal style text.
-        //    //Bold	    1	Bold text.
-        //    //Italic    2	Italic text.
-        //    //Underline 4	Underline text.
-        //    //Strikeout 8	Strikeout text.
-
-
-        //}
-
+        }
     }
 
 }
