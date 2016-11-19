@@ -300,6 +300,7 @@ namespace WindowsFormsApplication_LabelManager
                 //Tie UI GridView to dataTable
                 g2.DataSource = dataTable;
 
+
                 //Remove boolean (checkbox) columns from grid
                 RemoveCheckBoxColumns(g2);
                 
@@ -392,7 +393,9 @@ namespace WindowsFormsApplication_LabelManager
             }
         }
 
-        //Label Methods
+
+
+    //Label Methods
         private void SetupLabelObject()
         {
 
@@ -419,12 +422,19 @@ namespace WindowsFormsApplication_LabelManager
                 if (!string.IsNullOrEmpty(labelField[1]))
                 {
                     ToFromLabelObject.Text = labelField[1];
+                    ToFromLabelField.BackColor = System.Drawing.Color.White;
+                    ToFromLabelObject.BackColor = System.Drawing.Color.White;
+                    ToFromLabelField.ReadOnly = false;
                 }
             }
             catch (ArgumentOutOfRangeException)
             {
-                ToFromLabelObject.Text = " ";
                 MessageBox.Show("The label template selected has only one field.");
+                ToFromLabelObject.Text = "LABEL NOT FOUND";
+                ToFromLabelField.Clear();
+                ToFromLabelField.BackColor = System.Drawing.Color.IndianRed;
+                ToFromLabelObject.BackColor = System.Drawing.Color.IndianRed;
+                ToFromLabelField.ReadOnly = true;
             }
 
         }
@@ -446,22 +456,25 @@ namespace WindowsFormsApplication_LabelManager
 
         private void SetGiftCardLabelText(GiftCard GiftCard)
         {
-            GiftCard.GCAmount = Math.Round(GiftCard.GCAmount, 2);
-            GiftCard.GCAmount.ToString();
-            
+            if (ToFromLabelObject.Text != "LABEL NOT FOUND")
+            {
+                GiftCard.GCAmount = Math.Round(GiftCard.GCAmount, 2);
+                GiftCard.GCAmount.ToString();
 
-            if (!String.IsNullOrEmpty(GiftCard.ToMsg))
-            {
-                ToFromLabelField.Text = "To: " + GiftCard.ToMsg;
-            }
-            if (!String.IsNullOrEmpty(GiftCard.FromMsg))
-            {
-                ToFromLabelField.Text += "\r\nFrom: " + GiftCard.FromMsg;
-                ToFromLabelField.Text += "\r\nAmount: $" + GiftCard.GCAmount;
-            }
-            else
-            {
-                ToFromLabelField.Text = "Amount: $" + GiftCard.GCAmount;
+
+                if (!String.IsNullOrEmpty(GiftCard.ToMsg))
+                {
+                    ToFromLabelField.Text = "To: " + GiftCard.ToMsg;
+                }
+                if (!String.IsNullOrEmpty(GiftCard.FromMsg))
+                {
+                    ToFromLabelField.Text += "\r\nFrom: " + GiftCard.FromMsg;
+                    ToFromLabelField.Text += "\r\nAmount: $" + GiftCard.GCAmount;
+                }
+                else
+                {
+                    ToFromLabelField.Text = "Amount: $" + GiftCard.GCAmount;
+                }
             }
             
         }
@@ -498,8 +511,11 @@ namespace WindowsFormsApplication_LabelManager
                     Zip = row.Cells["ShipTo_ZipCode"].Value.ToString(),
 
                 };
-
-                SetGiftCardLabelText(giftCardData);
+                if (ToFromLabelObject.Text != "LABEL NOT FOUND")
+                {
+                    SetGiftCardLabelText(giftCardData);
+                }
+                
                 SetShippingLabelText(shipToAddress);
             }
             catch (System.InvalidCastException)
@@ -525,8 +541,12 @@ namespace WindowsFormsApplication_LabelManager
         private void ToFromLabelField_TextChanged(object sender, EventArgs e)
         {
             try
-            {
-                _label.SetObjectText(ToFromLabelObject.Text, ToFromLabelField.Text);
+            {   
+                if(ToFromLabelObject.Text != "LABEL NOT FOUND")
+                {
+                    _label.SetObjectText(ToFromLabelObject.Text, ToFromLabelField.Text);
+                }
+
             }
             catch (NullReferenceException)
             {
@@ -588,26 +608,6 @@ namespace WindowsFormsApplication_LabelManager
         private void FormatGiftCardURLColumn(DataTable table)
         {
             var col = "GiftCardImageURL";
-
-            //string a = "http://s7d9.scene7.com/is/image/murdochs/GCS-";
-            //string replacement = " ";
-            //Regex rgx = new Regex(a);
-
-            //for (int i = 0; i < table.Rows.Count; i++)
-            //{
-            //    string input = table.Rows[i][col].ToString();
-
-            //    string result = rgx.Replace(input, replacement);
-
-            //    var index = result.IndexOf("?");
-
-            //    var final = result.Remove(index);
-
-            //    table.Rows[i][col] = final;
-
-            //}
-
-
 
             //Display truncated form of gift card image URLb
             for (int i = 0; i < table.Rows.Count; i++)

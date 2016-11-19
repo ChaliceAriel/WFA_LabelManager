@@ -62,7 +62,7 @@ namespace WindowsFormsApplication_LabelManager
             this.PrintLabelBtn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.LightGreen;
             this.PrintLabelBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.PrintLabelBtn.Font = new System.Drawing.Font("Modern No. 20", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PrintLabelBtn.Location = new System.Drawing.Point(129, 186);
+            this.PrintLabelBtn.Location = new System.Drawing.Point(10, 5);
             this.PrintLabelBtn.Name = "PrintLabelBtn";
             this.PrintLabelBtn.Size = new System.Drawing.Size(165, 77);
             this.PrintLabelBtn.TabIndex = 4;
@@ -75,7 +75,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             this.FileNameEdit.BackColor = System.Drawing.SystemColors.Window;
             this.FileNameEdit.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FileNameEdit.Location = new System.Drawing.Point(313, 25);
+            this.FileNameEdit.Location = new System.Drawing.Point(372, 56);
             this.FileNameEdit.Name = "FileNameEdit";
             this.FileNameEdit.Size = new System.Drawing.Size(494, 26);
             this.FileNameEdit.TabIndex = 5;
@@ -84,7 +84,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(313, 5);
+            this.label1.Location = new System.Drawing.Point(372, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(404, 18);
             this.label1.TabIndex = 6;
@@ -100,7 +100,7 @@ namespace WindowsFormsApplication_LabelManager
             this.BrowseBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BrowseBtn.Font = new System.Drawing.Font("Modern No. 20", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BrowseBtn.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.BrowseBtn.Location = new System.Drawing.Point(196, 10);
+            this.BrowseBtn.Location = new System.Drawing.Point(255, 41);
             this.BrowseBtn.Name = "BrowseBtn";
             this.BrowseBtn.Size = new System.Drawing.Size(98, 41);
             this.BrowseBtn.TabIndex = 7;
@@ -116,7 +116,7 @@ namespace WindowsFormsApplication_LabelManager
             // ShippingLabelField
             // 
             this.ShippingLabelField.Font = new System.Drawing.Font("Franklin Gothic Book", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShippingLabelField.Location = new System.Drawing.Point(313, 146);
+            this.ShippingLabelField.Location = new System.Drawing.Point(255, 146);
             this.ShippingLabelField.Multiline = true;
             this.ShippingLabelField.Name = "ShippingLabelField";
             this.ShippingLabelField.Size = new System.Drawing.Size(306, 117);
@@ -126,7 +126,7 @@ namespace WindowsFormsApplication_LabelManager
             // ToFromLabelField
             // 
             this.ToFromLabelField.Font = new System.Drawing.Font("Franklin Gothic Book", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ToFromLabelField.Location = new System.Drawing.Point(661, 146);
+            this.ToFromLabelField.Location = new System.Drawing.Point(603, 146);
             this.ToFromLabelField.Multiline = true;
             this.ToFromLabelField.Name = "ToFromLabelField";
             this.ToFromLabelField.Size = new System.Drawing.Size(306, 117);
@@ -136,7 +136,7 @@ namespace WindowsFormsApplication_LabelManager
             // ShippingLabelObject
             // 
             this.ShippingLabelObject.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShippingLabelObject.Location = new System.Drawing.Point(313, 116);
+            this.ShippingLabelObject.Location = new System.Drawing.Point(255, 116);
             this.ShippingLabelObject.Name = "ShippingLabelObject";
             this.ShippingLabelObject.ReadOnly = true;
             this.ShippingLabelObject.Size = new System.Drawing.Size(163, 25);
@@ -145,7 +145,7 @@ namespace WindowsFormsApplication_LabelManager
             // ToFromLabelObject
             // 
             this.ToFromLabelObject.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ToFromLabelObject.Location = new System.Drawing.Point(661, 116);
+            this.ToFromLabelObject.Location = new System.Drawing.Point(603, 116);
             this.ToFromLabelObject.Name = "ToFromLabelObject";
             this.ToFromLabelObject.ReadOnly = true;
             this.ToFromLabelObject.Size = new System.Drawing.Size(163, 25);
@@ -160,7 +160,7 @@ namespace WindowsFormsApplication_LabelManager
             this.GetOrderButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Yellow;
             this.GetOrderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.GetOrderButton.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GetOrderButton.Location = new System.Drawing.Point(1207, 230);
+            this.GetOrderButton.Location = new System.Drawing.Point(1206, 146);
             this.GetOrderButton.Name = "GetOrderButton";
             this.GetOrderButton.Size = new System.Drawing.Size(92, 35);
             this.GetOrderButton.TabIndex = 15;
@@ -172,7 +172,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             this.SelectDate.CalendarFont = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectDate.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SelectDate.Location = new System.Drawing.Point(1034, 25);
+            this.SelectDate.Location = new System.Drawing.Point(920, 56);
             this.SelectDate.Name = "SelectDate";
             this.SelectDate.Size = new System.Drawing.Size(267, 26);
             this.SelectDate.TabIndex = 16;
@@ -180,7 +180,7 @@ namespace WindowsFormsApplication_LabelManager
             // OrderNumberBox
             // 
             this.OrderNumberBox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OrderNumberBox.Location = new System.Drawing.Point(1034, 187);
+            this.OrderNumberBox.Location = new System.Drawing.Point(970, 146);
             this.OrderNumberBox.Name = "OrderNumberBox";
             this.OrderNumberBox.Size = new System.Drawing.Size(145, 29);
             this.OrderNumberBox.TabIndex = 17;
@@ -189,7 +189,7 @@ namespace WindowsFormsApplication_LabelManager
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(1023, 166);
+            this.label2.Location = new System.Drawing.Point(956, 125);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(286, 18);
             this.label2.TabIndex = 18;
@@ -218,7 +218,7 @@ namespace WindowsFormsApplication_LabelManager
             this.SearchByDate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Yellow;
             this.SearchByDate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SearchByDate.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SearchByDate.Location = new System.Drawing.Point(1207, 75);
+            this.SearchByDate.Location = new System.Drawing.Point(1209, 49);
             this.SearchByDate.Name = "SearchByDate";
             this.SearchByDate.Size = new System.Drawing.Size(89, 33);
             this.SearchByDate.TabIndex = 22;
@@ -246,7 +246,7 @@ namespace WindowsFormsApplication_LabelManager
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label3.CausesValidation = false;
             this.label3.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(1023, 5);
+            this.label3.Location = new System.Drawing.Point(909, 36);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(183, 18);
             this.label3.TabIndex = 24;
