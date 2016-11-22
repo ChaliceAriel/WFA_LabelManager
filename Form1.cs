@@ -88,8 +88,8 @@ namespace WindowsFormsApplication_LabelManager
 
         private void SearchByDate_Click(object sender, EventArgs e)
         {
-                var date = SelectDate.Value.Date;
-                GetOrdersByDate(date);
+            var date = SelectDate.Value.Date;
+            GetOrdersByDate(date);
         }
 
         private void PrintLabelBtn_Click(object sender, EventArgs e)
@@ -170,7 +170,7 @@ namespace WindowsFormsApplication_LabelManager
             SqlDataAdapter dataAdapter = new SqlDataAdapter();
             DataTable dataTable = new DataTable();
 
-            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
+            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnectionStaging"].ToString();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -189,13 +189,14 @@ namespace WindowsFormsApplication_LabelManager
                 FormatGiftCardURLColumn(dataTable);
 
                 var g1 = dataGridView1;
-                
+
                 //Tie UI GridView to dataTable
                 g1.DataSource = dataTable;
 
                 //Remove boolean (checkbox) columns from grid
-                g1.Columns.Remove("IsGiftCard");
-                g1.Columns.Remove("GiftCardIsElectronicGiftCard");
+                RemoveElectronicGiftCards(dataTable);
+                RemoveCheckBoxColumns(g1);
+
                 //Improve appearance, organize data grid, and only show necessary columns
                 AdjustColumnOrder(g1);
                 FormatAmountColumn(g1);
@@ -264,7 +265,7 @@ namespace WindowsFormsApplication_LabelManager
 
                 else
                 {
-                    MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum+"'.");
+                    MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum + "'.");
                 }
             }
 
@@ -279,7 +280,7 @@ namespace WindowsFormsApplication_LabelManager
             SqlDataAdapter dataAdapter = new SqlDataAdapter();
             DataTable dataTable = new DataTable();
 
-            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnection"].ToString();
+            string connectionString = ConfigurationManager.ConnectionStrings["EcfSqlConnectionStaging"].ToString();
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -297,13 +298,14 @@ namespace WindowsFormsApplication_LabelManager
 
                 FormatGiftCardURLColumn(dataTable);
                 var g2 = dataGridView2;
+                
                 //Tie UI GridView to dataTable
                 g2.DataSource = dataTable;
 
-
+                RemoveElectronicGiftCards(dataTable);
                 //Remove boolean (checkbox) columns from grid
                 RemoveCheckBoxColumns(g2);
-                
+
                 //Improve appearance, organize data grid, and only show necessary columns
                 AdjustColumnOrder(g2);
                 FormatAmountColumn(g2);
@@ -395,7 +397,7 @@ namespace WindowsFormsApplication_LabelManager
 
 
 
-    //Label Methods
+        //Label Methods
         private void SetupLabelObject()
         {
 
@@ -410,7 +412,7 @@ namespace WindowsFormsApplication_LabelManager
             {
                 if (!string.IsNullOrEmpty(objName))
                 {
-                    
+
                     labelField.Add(objName);
                 }
 
@@ -476,7 +478,7 @@ namespace WindowsFormsApplication_LabelManager
                     ToFromLabelField.Text = "Amount: $" + GiftCard.GCAmount;
                 }
             }
-            
+
         }
 
         private void UpdateControls()
@@ -515,12 +517,12 @@ namespace WindowsFormsApplication_LabelManager
                 {
                     SetGiftCardLabelText(giftCardData);
                 }
-                
+
                 SetShippingLabelText(shipToAddress);
             }
             catch (System.InvalidCastException)
             {
-                
+
             }
         }
 
@@ -533,7 +535,7 @@ namespace WindowsFormsApplication_LabelManager
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show("Please select a label template file before editing or creating a new label.");
+                //MessageBox.Show("Please select a label template file before editing or creating a new label.");
             }
 
         }
@@ -541,8 +543,8 @@ namespace WindowsFormsApplication_LabelManager
         private void ToFromLabelField_TextChanged(object sender, EventArgs e)
         {
             try
-            {   
-                if(ToFromLabelObject.Text != "LABEL NOT FOUND")
+            {
+                if (ToFromLabelObject.Text != "LABEL NOT FOUND")
                 {
                     _label.SetObjectText(ToFromLabelObject.Text, ToFromLabelField.Text);
                 }
@@ -550,7 +552,7 @@ namespace WindowsFormsApplication_LabelManager
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show("Please select a label template file before editing or creating a new label.");
+                //MessageBox.Show("Please select a label template file before editing or creating a new label.");
             }
 
         }
@@ -589,10 +591,23 @@ namespace WindowsFormsApplication_LabelManager
 
             public GiftCard GiftCardData { get; set; }
             public Address ShipToAddress { get; set; }
-
         }
 
+    
+        
+
         // METHODS FOR ADJUSTING DATAGRID DISPLAY
+        public void RemoveElectronicGiftCards(DataTable table)
+        {
+            for(int i = table.Rows.Count - 1; i >= 0; i--)
+            {
+                var eCard = (bool)table.Rows[i]["GiftCardIsElectronicGiftCard"];
+                if (eCard)
+                {
+                    table.Rows.Remove(table.Rows[i]);
+                }
+            }
+        }
 
         private void RemoveCheckBoxColumns(DataGridView grid)
         {
