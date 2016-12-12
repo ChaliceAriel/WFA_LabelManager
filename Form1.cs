@@ -12,9 +12,11 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace WindowsFormsApplication_LabelManager
 {
+
 
     public partial class Form1 : Form
     {
@@ -23,28 +25,31 @@ namespace WindowsFormsApplication_LabelManager
         public List<GiftCardOrder> orderListByDate = new List<GiftCardOrder>();
         public List<GiftCard> giftCardList = new List<GiftCard>();
         public List<GiftCard> giftCardListByDate = new List<GiftCard>();
+        //public string printerName;
 
-
+        private static void OnThreadException(object sender, ThreadExceptionEventArgs t)
+        {
+            MessageBox.Show(t.Exception.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        }
 
 
         public Form1()
         {
             InitializeComponent();
 
-            PrintLabelBtn.BringToFront();
         }
 
         //Event Handlers
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Application.ThreadException += OnThreadException;
 
-            // populate label objects
-            SetupLabelObject();
+            // obtain the currently selected printer
+            SetupLabelWriterSelection();
+            
 
-            UpdateControls();
-
-            string message = "Please begin by selecting a saved label template.\n\r\n\r You will be unable to edit or create new labels without a template, so this step is very important. \n\r\n\r Thank You!";
+            string message = "Please begin by selecting a saved label template.\n\r\n\rYou will be unable to edit or create new labels without a template, so this step is very important. \n\r\n\r Thank You!";
             string caption = "Choose A Label Template";
             MessageBoxButtons button = MessageBoxButtons.OK;
 
@@ -68,9 +73,30 @@ namespace WindowsFormsApplication_LabelManager
 
                 // populate label objects
                 SetupLabelObject();
-
                 UpdateControls();
+
+                // clear label fields
+                ToFromLabelField.Clear();
+                ShippingLabelField.Clear();
+
+                // deselect all grid rows
+                if (dataGridView2.SelectedRows.Count > 0)
+                {
+                    dataGridView2.ClearSelection();
+                }
+
+                if (dataGridView1.SelectedRows.Count > 0)
+                {
+                    dataGridView1.ClearSelection();
+                }
+
             }
+
+        }
+
+        private void CloseBtn_Click(object sender, System.EventArgs e)
+        {
+            Close();
         }
 
         private void GetOrderButton_Click(object sender, EventArgs e)
@@ -92,10 +118,24 @@ namespace WindowsFormsApplication_LabelManager
             GetOrdersByDate(date);
         }
 
+        private void SetupLabelWriterSelection()
+        {
+            // clear all items first
+            LabelWriterCmb.Items.Clear();
+
+            foreach (IPrinter printer in Framework.GetPrinters())
+                LabelWriterCmb.Items.Add(printer.Name);
+
+            if (LabelWriterCmb.Items.Count > 0)
+                LabelWriterCmb.SelectedIndex = 0;
+
+            LabelWriterCmb.Enabled = LabelWriterCmb.Items.Count > 0;
+        }
+
         private void PrintLabelBtn_Click(object sender, EventArgs e)
         {
-
-            IPrinter printer = Framework.GetPrinters()["DYMO LabelWriter 450 Turbo"];
+            IPrinter printer = Framework.GetPrinters()[LabelWriterCmb.Text];
+            
             if (printer is ILabelWriterPrinter)
             {
                 ILabelWriterPrintParams printParams = null;
@@ -104,17 +144,18 @@ namespace WindowsFormsApplication_LabelManager
                 {
                     printParams = new LabelWriterPrintParams();
                     printParams.RollSelection = (RollSelection)Enum.Parse(typeof(RollSelection), "Auto");
+
                 }
 
                 _label.Print(printer, printParams);
+                UpdateControls();
             }
             else
+            {
                 _label.Print(printer); // print with default params
-        }
-
-        private void PrintLabelBtn_KeyDown(object sender, KeyEventArgs e)
-        {
-            PrintLabelBtn_Click(sender, e);
+                UpdateControls();
+            }
+                
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -128,13 +169,20 @@ namespace WindowsFormsApplication_LabelManager
 
                 if (dataGridView1.SelectedRows.Count > 0)
                 {
-                    var index = dataGridView1.CurrentCell.RowIndex;
-                    SetLabelsToSelectedRow(index, dataGridView1);
+                    try
+                    {
+                        var index = dataGridView1.CurrentCell.RowIndex;
+                        SetLabelsToSelectedRow(index, dataGridView1);
+                    }
+                    catch (System.NullReferenceException)
+                    {
+
+                    }
                 }
             }
             catch (System.ArgumentOutOfRangeException)
             {
-                MessageBox.Show("No row has been selected for single order view.");
+                
             }
 
         }
@@ -149,13 +197,20 @@ namespace WindowsFormsApplication_LabelManager
                 }
                 if (dataGridView2.SelectedRows.Count > 0)
                 {
-                    var index = dataGridView2.CurrentCell.RowIndex;
-                    SetLabelsToSelectedRow(index, dataGridView2);
+                    try
+                    {
+                        var index = dataGridView2.CurrentCell.RowIndex;
+                        SetLabelsToSelectedRow(index, dataGridView2);
+                    }
+                    catch (System.NullReferenceException)
+                    {
+
+                    }
                 }
             }
             catch (System.ArgumentOutOfRangeException)
             {
-                MessageBox.Show("No row has been selected for order date view.");
+                
             }
         }
 
@@ -186,17 +241,17 @@ namespace WindowsFormsApplication_LabelManager
                 dataTable.Locale = System.Globalization.CultureInfo.InvariantCulture;
                 dataAdapter.Fill(dataTable);
 
-                FormatGiftCardURLColumn(dataTable);
-
+                
+          
                 var g1 = dataGridView1;
 
                 //Tie UI GridView to dataTable
                 g1.DataSource = dataTable;
 
                 //Remove boolean (checkbox) columns from grid
-                RemoveElectronicGiftCards(dataTable);
+                
                 RemoveCheckBoxColumns(g1);
-
+                FormatGiftCardURLColumn(dataTable);
                 //Improve appearance, organize data grid, and only show necessary columns
                 AdjustColumnOrder(g1);
                 FormatAmountColumn(g1);
@@ -256,15 +311,26 @@ namespace WindowsFormsApplication_LabelManager
                         orderList.Add(order);
                     }
 
-                    //Set Label field text to first index (row 0) and set that row as selected
                     dataGridView2.ClearSelection();
-                    g1.Rows[0].Selected = true;
-                    SetGiftCardLabelText(giftCardList[0]);
-                    SetShippingLabelText(orderList[0].ShipToAddress);
+                    if (orderList.Count > 0)
+                    {
+                        //Set Label field text to first index (row 0) and set that row as selected
+                        g1.Rows[0].Selected = true;
+                        SetGiftCardLabelText(giftCardList[0]);
+                        SetShippingLabelText(orderList[0].ShipToAddress);
+                    }
+                    else
+                    {
+                        ToFromLabelField.Clear();
+                        ShippingLabelField.Clear();
+                        MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum + "'.");
+                    }
                 }
 
                 else
                 {
+                    ToFromLabelField.Clear();
+                    ShippingLabelField.Clear();
                     MessageBox.Show("I'm sorry. No order was found with the PO Number or Kibo Order value of '" + orderNum + "'.");
                 }
             }
@@ -296,16 +362,18 @@ namespace WindowsFormsApplication_LabelManager
                 dataTable.Locale = System.Globalization.CultureInfo.InvariantCulture;
                 dataAdapter.Fill(dataTable);
 
-                FormatGiftCardURLColumn(dataTable);
-                var g2 = dataGridView2;
                 
-                //Tie UI GridView to dataTable
-                g2.DataSource = dataTable;
+                var g2 = dataGridView2;
 
-                RemoveElectronicGiftCards(dataTable);
+                var dt = RemoveElectronicGiftCards(dataTable);
+                FormatGiftCardURLColumn(dataTable);
+                //Tie UI GridView to dataTable
+                g2.DataSource = dt;
+
+                
                 //Remove boolean (checkbox) columns from grid
                 RemoveCheckBoxColumns(g2);
-
+                
                 //Improve appearance, organize data grid, and only show necessary columns
                 AdjustColumnOrder(g2);
                 FormatAmountColumn(g2);
@@ -323,60 +391,75 @@ namespace WindowsFormsApplication_LabelManager
 
                     while (reader.Read())
                     {
-                        //create new objects from each row of data
+                        bool eCard = (bool)reader["GiftCardIsElectronicGiftCard"];
 
-                        GiftCardOrder order = new GiftCardOrder
+                        if (!eCard)
                         {
+                            //create new objects from each row of data
 
-                            PONum = GetStringFromReader(reader, "TrackingNumber"),
-                            KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
-                            DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
-                            CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
-                            CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
+                            GiftCardOrder order = new GiftCardOrder
+                            {
 
-                        };
+                                PONum = GetStringFromReader(reader, "TrackingNumber"),
+                                KiboOrderId = GetStringFromReader(reader, "ShopatronOrderId"),
+                                DateOrdered = Convert.ToDateTime(reader["DateOrdered"]).ToString("U"),
+                                CustomerFirstName = GetStringFromReader(reader, "BillTo_FirstName"),
+                                CustomerLastName = GetStringFromReader(reader, "BillTo_LastName"),
 
-                        order.GiftCardData = new GiftCard
-                        {
+                            };
 
-                            CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
-                            ToMsg = GetStringFromReader(reader, "GiftCardTo"),
-                            FromMsg = GetStringFromReader(reader, "GiftCardFrom"),
-                            GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
-                            GCAmount = (decimal)reader["GCAmount"],
-                        };
+                            order.GiftCardData = new GiftCard
+                            {
 
-                        order.ShipToAddress = new Address
-                        {
+                                CardImgURL = GetStringFromReader(reader, "GiftCardImageURL"),
+                                ToMsg = GetStringFromReader(reader, "GiftCardTo"),
+                                FromMsg = GetStringFromReader(reader, "GiftCardFrom"),
+                                GCMsg = GetStringFromReader(reader, "GiftCardMessage"),
+                                GCAmount = (decimal)reader["GCAmount"],
+                            };
 
-                            FirstName = GetStringFromReader(reader, "ShipTo_FirstName"),
-                            LastName = GetStringFromReader(reader, "ShipTo_LastName"),
-                            LineOne = GetStringFromReader(reader, "ShipTo_Line1"),
-                            LineTwo = GetStringFromReader(reader, "ShipTo_Line2"),
-                            City = GetStringFromReader(reader, "ShipTo_City"),
-                            State = GetStringFromReader(reader, "ShipTo_State"),
-                            Zip = GetStringFromReader(reader, "ShipTo_ZipCode"),
+                            order.ShipToAddress = new Address
+                            {
 
-                        };
+                                FirstName = GetStringFromReader(reader, "ShipTo_FirstName"),
+                                LastName = GetStringFromReader(reader, "ShipTo_LastName"),
+                                LineOne = GetStringFromReader(reader, "ShipTo_Line1"),
+                                LineTwo = GetStringFromReader(reader, "ShipTo_Line2"),
+                                City = GetStringFromReader(reader, "ShipTo_City"),
+                                State = GetStringFromReader(reader, "ShipTo_State"),
+                                Zip = GetStringFromReader(reader, "ShipTo_ZipCode"),
+
+                            };
 
 
-                        //add new objects to empty object lists
-                        giftCardListByDate.Add(order.GiftCardData);
-                        orderListByDate.Add(order);
+                            //add new objects to empty object lists
+                            giftCardListByDate.Add(order.GiftCardData);
+                            orderListByDate.Add(order);
+                        }
                     }
 
-                    //Set Label field text to first index (row 0) and set that row as selected
+                    
                     dataGridView1.ClearSelection();
-                    g2.Rows[0].Selected = true;
-                    SetGiftCardLabelText(giftCardListByDate[0]);
-                    SetShippingLabelText(orderListByDate[0].ShipToAddress);
-
-                    //MarkUniqueOrders();
+                    if (orderListByDate.Count > 0)
+                    {
+                        //Set Label field text to first index (row 0) and set that row as selected
+                        g2.Rows[0].Selected = true;
+                        SetGiftCardLabelText(giftCardListByDate[0]);
+                        SetShippingLabelText(orderListByDate[0].ShipToAddress);
+                    }
+                    else
+                    {
+                        ToFromLabelField.Clear();
+                        ShippingLabelField.Clear();
+                        MessageBox.Show("I'm sorry. No gift card orders were found for this date: " + date + ".");
+                    }
 
                 }
 
                 else
                 {
+                    ToFromLabelField.Clear();
+                    ShippingLabelField.Clear();
                     MessageBox.Show("I'm sorry. No gift card orders were found for this date: " + date + ".");
                 }
             }
@@ -402,6 +485,7 @@ namespace WindowsFormsApplication_LabelManager
         {
 
             ShippingLabelObject.Clear();
+            ToFromLabelObject.Clear();
 
             if (_label == null)
                 return;
@@ -431,12 +515,13 @@ namespace WindowsFormsApplication_LabelManager
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show("The label template selected has only one field.");
-                ToFromLabelObject.Text = "LABEL NOT FOUND";
+                string msg = "Selected label template has only one field.";
+                ToFromLabelObject.Clear();
                 ToFromLabelField.Clear();
-                ToFromLabelField.BackColor = System.Drawing.Color.IndianRed;
-                ToFromLabelObject.BackColor = System.Drawing.Color.IndianRed;
+                ToFromLabelObject.BackColor = System.Drawing.Color.LightGray;
+                ToFromLabelField.BackColor = System.Drawing.Color.LightGray;
                 ToFromLabelField.ReadOnly = true;
+                MessageBox.Show(msg);
             }
 
         }
@@ -458,7 +543,7 @@ namespace WindowsFormsApplication_LabelManager
 
         private void SetGiftCardLabelText(GiftCard GiftCard)
         {
-            if (ToFromLabelObject.Text != "LABEL NOT FOUND")
+            if (!string.IsNullOrEmpty(ToFromLabelObject.Text))
             {
                 GiftCard.GCAmount = Math.Round(GiftCard.GCAmount, 2);
                 GiftCard.GCAmount.ToString();
@@ -513,7 +598,7 @@ namespace WindowsFormsApplication_LabelManager
                     Zip = row.Cells["ShipTo_ZipCode"].Value.ToString(),
 
                 };
-                if (ToFromLabelObject.Text != "LABEL NOT FOUND")
+                if (!string.IsNullOrEmpty(ToFromLabelObject.Text))
                 {
                     SetGiftCardLabelText(giftCardData);
                 }
@@ -544,7 +629,7 @@ namespace WindowsFormsApplication_LabelManager
         {
             try
             {
-                if (ToFromLabelObject.Text != "LABEL NOT FOUND")
+                if (!string.IsNullOrEmpty(ToFromLabelObject.Text))
                 {
                     _label.SetObjectText(ToFromLabelObject.Text, ToFromLabelField.Text);
                 }
@@ -597,7 +682,7 @@ namespace WindowsFormsApplication_LabelManager
         
 
         // METHODS FOR ADJUSTING DATAGRID DISPLAY
-        public void RemoveElectronicGiftCards(DataTable table)
+        public static DataTable RemoveElectronicGiftCards(DataTable table)
         {
             for(int i = table.Rows.Count - 1; i >= 0; i--)
             {
@@ -607,6 +692,7 @@ namespace WindowsFormsApplication_LabelManager
                     table.Rows.Remove(table.Rows[i]);
                 }
             }
+            return table;
         }
 
         private void RemoveCheckBoxColumns(DataGridView grid)
@@ -722,6 +808,31 @@ namespace WindowsFormsApplication_LabelManager
             grid.Columns["GiftCardImageURL"].HeaderText = "Gift Card";
         }
 
+        private void clearBtn2_Click(object sender, EventArgs e)
+        {
+            dataGridView2.DataSource = null;
+            ToFromLabelField.Clear();
+            ShippingLabelField.Clear();
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                dataGridView1.ClearSelection();
+            }
+        }
+
+        private void clearBtn1_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = null;
+            ToFromLabelField.Clear();
+            ShippingLabelField.Clear();
+            if (dataGridView2.SelectedRows.Count > 0)
+            {
+                dataGridView2.ClearSelection();
+            }
+        }
+
     }
 
 }
+
+
+
